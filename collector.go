@@ -47,6 +47,18 @@ var (
 		"Carbondioxide measurement in parts per million",
 		varLabels,
 		nil)
+
+	noiseDesc = prometheus.NewDesc(
+		prefix+"noise_db",
+		"Noise measurement in decibels",
+		varLabels,
+		nil)
+
+	pressureDesc = prometheus.NewDesc(
+		prefix+"pressure_mb",
+		"Atmospheric pressure measurement in mb",
+		varLabels,
+		nil)
 )
 
 type netatmoCollector struct {
@@ -104,6 +116,14 @@ func collectData(ch chan<- prometheus.Metric, device *netatmo.Device) {
 
 	if data.CO2 != nil {
 		sendMetric(ch, cotwoDesc, prometheus.GaugeValue, float64(*data.CO2), moduleName)
+	}
+
+	if data.Noise != nil {
+		sendMetric(ch, noiseDesc, prometheus.GaugeValue, float64(*data.Noise), moduleName)
+	}
+
+	if data.Pressure != nil {
+		sendMetric(ch, pressureDesc, prometheus.GaugeValue, float64(*data.Pressure), moduleName)
 	}
 }
 
