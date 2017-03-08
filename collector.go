@@ -56,7 +56,25 @@ var (
 
 	pressureDesc = prometheus.NewDesc(
 		prefix+"pressure_mb",
-		"Atmospheric pressure measurement in mb",
+		"Atmospheric pressure measurement in millibar",
+		varLabels,
+		nil)
+
+	windStrengthDesc = prometheus.NewDesc(
+		prefix+"wind_strength_kph",
+		"Wind strength in kilometers per hour",
+		varLabels,
+		nil)
+
+	windDirectionDesc = prometheus.NewDesc(
+		prefix+"wind_direction_degrees",
+		"Wind direction in degrees",
+		varLabels,
+		nil)
+
+	rainDesc = prometheus.NewDesc(
+		prefix+"rain_amount_mm",
+		"Rain amount in millimeters",
 		varLabels,
 		nil)
 )
@@ -124,6 +142,18 @@ func collectData(ch chan<- prometheus.Metric, device *netatmo.Device) {
 
 	if data.Pressure != nil {
 		sendMetric(ch, pressureDesc, prometheus.GaugeValue, float64(*data.Pressure), moduleName)
+	}
+
+	if data.WindStrength != nil {
+		sendMetric(ch, windStrengthDesc, prometheus.GaugeValue, float64(*data.WindStrength), moduleName)
+	}
+
+	if data.WindAngle != nil {
+		sendMetric(ch, windDirectionDesc, prometheus.GaugeValue, float64(*data.WindAngle), moduleName)
+	}
+
+	if data.Rain != nil {
+		sendMetric(ch, rainDesc, prometheus.GaugeValue, float64(*data.Rain), moduleName)
 	}
 }
 
