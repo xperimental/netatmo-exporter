@@ -17,7 +17,7 @@ type config struct {
 
 func parseConfig() (config, error) {
 	cfg := config{}
-	pflag.StringVarP(&cfg.Addr, "addr", "a", ":8080", "Address to listen on.")
+	pflag.StringVarP(&cfg.Addr, "addr", "a", ":9210", "Address to listen on.")
 	pflag.StringVarP(&cfg.Netatmo.ClientID, "client-id", "i", "", "Client ID for NetAtmo app.")
 	pflag.StringVarP(&cfg.Netatmo.ClientSecret, "client-secret", "s", "", "Client secret for NetAtmo app.")
 	pflag.StringVarP(&cfg.Netatmo.Username, "username", "u", "", "Username of NetAtmo account.")

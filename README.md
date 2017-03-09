@@ -21,7 +21,7 @@ This application tries to get data from the NetAtmo API. For that to work you wi
 ```
 $ netatmo-exporter --help
 Usage of netatmo-exporter:
-  -a, --addr string            Address to listen on. (default ":8080")
+  -a, --addr string            Address to listen on. (default ":9210")
   -i, --client-id string       Client ID for NetAtmo app.
   -s, --client-secret string   Client secret for NetAtmo app.
   -p, --password string        Password of NetAtmo account.
@@ -37,7 +37,6 @@ scrape_configs:
   - job_name: 'netatmo'
     scrape_interval: 90s
     static_configs:
-      - targets: ['localhost:8080']
+      - targets: ['localhost:9210']
 ```
 
-**Note:** The exporter currently uses port 8080 as a default as it does not have an "assigned exporter port" yet. Look at the [prometheus Wiki](https://github.com/prometheus/prometheus/wiki/Default-port-allocations) for any updates.
