@@ -95,11 +95,11 @@ func collectData(ch chan<- prometheus.Metric, device *netatmo.Device) {
 	moduleName := device.ModuleName
 	data := device.DashboardData
 
-	if data.LastMesure == nil {
+	if data.LastMeasure == nil {
 		return
 	}
 
-	date := time.Unix(*data.LastMesure, 0)
+	date := time.Unix(*data.LastMeasure, 0)
 	if time.Since(date) > staleDataThreshold {
 		return
 	}
