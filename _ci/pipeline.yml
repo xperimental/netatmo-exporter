@@ -1,0 +1,38 @@
+resource_types:
+  - name: github-status
+    type: docker-image
+    source:
+      repository: dpb587/github-status-resource
+      tag: master
+resources:
+- name: netatmo-exporter
+  type: git
+  source:
+    uri: git://github.com/xperimental/netatmo-exporter.git
+    branch: master
+- name: status
+  type: github-status
+  source:
+    repository: xperimental/netatmo-exporter
+    access_token: ((repo_github_token))
+jobs:
+- name: build
+  plan:
+  - get: source
+    resource: netatmo-exporter
+    trigger: true
+  - put: status
+    params:
+      state: pending
+      commit: source
+  - task: build
+    file: source/_ci/build.yml
+    on_failure:
+      put: status
+      params:
+        state: failure
+        commit: source
+  - put: status
+    params:
+      state: success
+      commit: source
