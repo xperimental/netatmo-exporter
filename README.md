@@ -1,8 +1,16 @@
-# netatmo-exporter
+# netatmo-exporter [![Docker Build Status](https://img.shields.io/docker/build/xperimental/netatmo-exporter.svg?style=flat-square)](https://hub.docker.com/r/xperimental/netatmo-exporter/)
 
 Simple [prometheus](https://prometheus.io) exporter for getting sensor values [NetAtmo](https://www.netatmo.com) sensors into prometheus.
 
 ## Installation
+
+### Run docker container
+
+The exporter is available as a Docker image: [`xperimental/netatmo-exporter`](https://hub.docker.com/r/xperimental/netatmo-exporter/)
+
+The `latest` tag is built from the current master, tags tagged since the Docker support was added are also available as a tag in Docker.
+
+### Build from source
 
 If you have a working Go installation, getting the binary should be as simple as
 
@@ -18,7 +26,7 @@ This application tries to get data from the NetAtmo API. For that to work you wi
 
 ## Usage
 
-```
+```plain
 $ netatmo-exporter --help
 Usage of netatmo-exporter:
   -a, --addr string            Address to listen on. (default ":9210")
