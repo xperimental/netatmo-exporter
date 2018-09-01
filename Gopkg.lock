@@ -3,86 +3,109 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:cb0535f5823b47df7dcb9768ebb6c000b79ad115472910c70efe93c9ed9b2315"
   name = "github.com/beorn7/perks"
   packages = ["quantile"]
+  pruneopts = "NUT"
   revision = "4c0e84591b9aa9e6dcfdf3e020114cd81f89d5f9"
 
 [[projects]]
   branch = "master"
+  digest = "1:0921aa4e4ce9c931906d5d362d5648bf3836919d1426b3eb8b78070bbdb2140f"
   name = "github.com/exzz/netatmo-api-go"
   packages = ["."]
+  pruneopts = "NUT"
   revision = "41589231f44643a3fad4fa1552a79fc8edc13698"
 
 [[projects]]
+  digest = "1:9f35c1344b56e5868d511d231f215edd0650aa572664f856444affdd256e43e4"
   name = "github.com/golang/protobuf"
   packages = ["proto"]
+  pruneopts = "NUT"
   revision = "925541529c1fa6821df4e44ce2723319eb2be768"
   version = "v1.0.0"
 
 [[projects]]
+  digest = "1:5985ef4caf91ece5d54817c11ea25f182697534f8ae6521eadcd628c142ac4b6"
   name = "github.com/matttproud/golang_protobuf_extensions"
   packages = ["pbutil"]
+  pruneopts = "NUT"
   revision = "3247c84500bff8d9fb6d579d800f20b3e091582c"
   version = "v1.0.0"
 
 [[projects]]
+  digest = "1:3e5fd795ebf6a9e13e67d644da76130af7a6003286531f9573f8074c228b66a3"
   name = "github.com/prometheus/client_golang"
   packages = ["prometheus"]
+  pruneopts = "NUT"
   revision = "c5b7fccd204277076155f10851dad72b76a49317"
   version = "v0.8.0"
 
 [[projects]]
   branch = "master"
+  digest = "1:32d10bdfa8f09ecf13598324dba86ab891f11db3c538b6a34d1c3b5b99d7c36b"
   name = "github.com/prometheus/client_model"
   packages = ["go"]
+  pruneopts = "NUT"
   revision = "99fa1f4be8e564e8a6b613da7fa6f46c9edafc6c"
 
 [[projects]]
   branch = "master"
+  digest = "1:4a6bb73eb5d7b8e67f25d22d87c84116cc69dfa80299dfd06622b8eee47917a8"
   name = "github.com/prometheus/common"
   packages = [
     "expfmt",
     "internal/bitbucket.org/ww/goautoneg",
-    "model"
+    "model",
   ]
+  pruneopts = "NUT"
   revision = "89604d197083d4781071d3c65855d24ecfb0a563"
 
 [[projects]]
   branch = "master"
+  digest = "1:b2f81139ed70ba4358171bc3024a5f2a3a9d2148ccc3fff03e3a011afe9b7543"
   name = "github.com/prometheus/procfs"
   packages = [
     ".",
     "internal/util",
     "nfs",
-    "xfs"
+    "xfs",
   ]
+  pruneopts = "NUT"
   revision = "282c8707aa210456a825798969cc27edda34992a"
 
 [[projects]]
+  digest = "1:3ab855aa584d08db6541ce99dad60c12bd6a328ecb8a7358363887f85c976347"
   name = "github.com/spf13/pflag"
   packages = ["."]
+  pruneopts = "NUT"
   revision = "e57e3eeb33f795204c1ca35f56c44f83227c6e66"
   version = "v1.0.0"
 
 [[projects]]
   branch = "master"
+  digest = "1:d6b719875cf8091fbab38527d81d34e71f4521b9ee9ccfbd4a32cff2ac5af96e"
   name = "golang.org/x/net"
   packages = [
     "context",
-    "context/ctxhttp"
+    "context/ctxhttp",
   ]
+  pruneopts = "NUT"
   revision = "136a25c244d3019482a795d728110278d6ba09a4"
 
 [[projects]]
   branch = "master"
+  digest = "1:f058f3811608b1c83a5939072f4e94b443a104e383137fd6b8e535e26e8abe31"
   name = "golang.org/x/oauth2"
   packages = [
     ".",
-    "internal"
+    "internal",
   ]
+  pruneopts = "NUT"
   revision = "543e37812f10c46c622c9575afd7ad22f22a12ba"
 
 [[projects]]
+  digest = "1:f229c599a645bffd97518107ac89955adfa6d5e5e4efa3e8cadb29789219639f"
   name = "google.golang.org/appengine"
   packages = [
     "internal",
@@ -91,14 +114,19 @@
     "internal/log",
     "internal/remote_api",
     "internal/urlfetch",
-    "urlfetch"
+    "urlfetch",
   ]
+  pruneopts = "NUT"
   revision = "150dc57a1b433e64154302bdc40b6bb8aefa313a"
   version = "v1.0.0"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "a0a5d5bfda78b46d80c19cc4905fd68f74300ba9ad1f0ffdcff97be7b8e945a5"
+  input-imports = [
+    "github.com/exzz/netatmo-api-go",
+    "github.com/prometheus/client_golang/prometheus",
+    "github.com/spf13/pflag",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1
