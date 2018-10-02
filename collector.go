@@ -78,6 +78,22 @@ var (
 		"Rain amount in millimeters",
 		varLabels,
 		nil)
+
+	batteryDesc = prometheus.NewDesc(
+		prefix+"battery_percent",
+		"Battery remaining life (10: low)",
+		varLabels,
+		nil)
+	wifiDesc = prometheus.NewDesc(
+		prefix+"wifi_signal_strength",
+		"Wifi signal strength (86: bad, 71: avg, 56: good)",
+		varLabels,
+		nil)
+	rfDesc = prometheus.NewDesc(
+		prefix+"rf_signal_strength",
+		"RF signal strength (90: lowest, 60: highest)",
+		varLabels,
+		nil)
 )
 
 type netatmoCollector struct {
@@ -156,6 +172,16 @@ func collectData(ch chan<- prometheus.Metric, device *netatmo.Device, stationNam
 
 	if data.Rain != nil {
 		sendMetric(ch, rainDesc, prometheus.GaugeValue, float64(*data.Rain), moduleName, stationName)
+	}
+
+	if device.BatteryPercent != nil {
+		sendMetric(ch, batteryDesc, prometheus.GaugeValue, float64(*device.BatteryPercent), moduleName, stationName)
+	}
+	if device.WifiStatus != nil {
+		sendMetric(ch, wifiDesc, prometheus.GaugeValue, float64(*device.WifiStatus), moduleName, stationName)
+	}
+	if device.RFStatus != nil {
+		sendMetric(ch, rfDesc, prometheus.GaugeValue, float64(*device.RFStatus), moduleName, stationName)
 	}
 }
 
