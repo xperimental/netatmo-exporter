@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"os"
 
 	netatmo "github.com/exzz/netatmo-api-go"
 	"github.com/prometheus/client_golang/prometheus"
@@ -17,11 +18,18 @@ type config struct {
 
 func parseConfig() (config, error) {
 	cfg := config{}
-	pflag.StringVarP(&cfg.Addr, "addr", "a", ":9210", "Address to listen on.")
-	pflag.StringVarP(&cfg.Netatmo.ClientID, "client-id", "i", "", "Client ID for NetAtmo app.")
-	pflag.StringVarP(&cfg.Netatmo.ClientSecret, "client-secret", "s", "", "Client secret for NetAtmo app.")
-	pflag.StringVarP(&cfg.Netatmo.Username, "username", "u", "", "Username of NetAtmo account.")
-	pflag.StringVarP(&cfg.Netatmo.Password, "password", "p", "", "Password of NetAtmo account.")
+
+	// Set default port to bind to
+	addr := ":9210"
+	if envAddr := os.Getenv("NETATMO_EXPORTER_ADDR"); envAddr != "" {
+		addr = envAddr
+	}
+
+	pflag.StringVarP(&cfg.Addr, "addr", "a", addr, "Address to listen on.")
+	pflag.StringVarP(&cfg.Netatmo.ClientID, "client-id", "i", os.Getenv("NETATMO_CLIENT_ID"), "Client ID for NetAtmo app.")
+	pflag.StringVarP(&cfg.Netatmo.ClientSecret, "client-secret", "s", os.Getenv("NETATMO_CLIENT_SECRET"), "Client secret for NetAtmo app.")
+	pflag.StringVarP(&cfg.Netatmo.Username, "username", "u", os.Getenv("NETATMO_CLIENT_USERNAME"), "Username of NetAtmo account.")
+	pflag.StringVarP(&cfg.Netatmo.Password, "password", "p", os.Getenv("NETATMO_CLIENT_PASSWORD"), "Password of NetAtmo account.")
 	pflag.Parse()
 
 	if len(cfg.Addr) == 0 {

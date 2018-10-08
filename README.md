@@ -38,6 +38,18 @@ Usage of netatmo-exporter:
 
 After starting the server will offer the metrics on the `/metrics` endpoint, which can be used as a target for prometheus.
 
+### Passing secrets
+
+You can pass credentials either via command line arguments (see next section) or by populating the following environment variables:
+
+* `NETATMO_EXPORTER_ADDR` Address to listen on
+* `NETATMO_CLIENT_ID` Client ID for NetAtmo app
+* `NETATMO_CLIENT_SECRET` Client secret for NetAtmo app
+* `NETATMO_CLIENT_USERNAME` Username of NetAtmo account
+* `NETATMO_CLIENT_PASSWORD` Password of NetAtmo account
+
+### Scrape interval
+
 The exporter will query the Netatmo API every time it is scraped by prometheus. It does not make sense to scrape the Netatmo API with a small interval as the sensors only update their data every few minutes, so don't forget to set a slower scrape interval for this exporter:
 
 ```yml
@@ -47,4 +59,3 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9210']
 ```
-
