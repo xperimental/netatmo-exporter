@@ -4,6 +4,11 @@ This changelog contains the changes made between releases. The versioning follow
 
 ## Unreleased
 
+### Added
+
+- Support for battery and RF-link status
+- Support for configuration via environment variables
+
 ## 1.1.0 (2018-09-02)
 
 ### Added
