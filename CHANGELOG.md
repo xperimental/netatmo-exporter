@@ -4,6 +4,8 @@ This changelog contains the changes made between releases. The versioning follow
 
 ## Unreleased
 
+## 1.2.0 (2018-10-27)
+
 ### Added
 
 - Support for battery and RF-link status
