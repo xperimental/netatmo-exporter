@@ -2,17 +2,18 @@ FROM golang:1 AS builder
 
 RUN apt-get update && apt-get install -y upx
 
-ENV PACKAGE=github.com/xperimental/netatmo-exporter
-
-RUN mkdir -p /go/src/${PACKAGE}
-WORKDIR /go/src/${PACKAGE}
+WORKDIR /build
 
 ENV LD_FLAGS="-w"
 ENV CGO_ENABLED=0
 
-COPY . /go/src/${PACKAGE}
+COPY go.mod go.sum /build/
+RUN go mod download
+RUN go mod verify
+
+COPY . /build/
 RUN echo "-- TEST" \
- && go test ./... \
+ && go test -cover ./... \
  && echo "-- BUILD" \
  && go install -tags netgo -ldflags "${LD_FLAGS}" . \
  && echo "-- PACK" \

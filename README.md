@@ -12,10 +12,14 @@ The `latest` tag is built from the current master, tags tagged since the Docker 
 
 ### Build from source
 
+Because this program uses the "Go Module" feature introduced in Go 1.11, you'll need at least that version of Go for building it.
+
 If you have a working Go installation, getting the binary should be as simple as
 
 ```bash
-go get github.com/xperimental/netatmo-exporter
+git clone https://github.com/xperimental/netatmo-exporter
+cd netatmo-exporter
+go build .
 ```
 
 There is also a `build-arm.sh` script if you want to run the exporter on an ARMv7 device.
