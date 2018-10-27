@@ -7,6 +7,7 @@ import (
 
 	netatmo "github.com/exzz/netatmo-api-go"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func main() {
@@ -26,7 +27,7 @@ func main() {
 	}
 	prometheus.MustRegister(metrics)
 
-	http.Handle("/metrics", prometheus.UninstrumentedHandler())
+	http.Handle("/metrics", promhttp.HandlerFor(prometheus.DefaultGatherer, promhttp.HandlerOpts{}))
 	http.Handle("/", http.RedirectHandler("/metrics", http.StatusFound))
 
 	log.Printf("Listen on %s...", cfg.Addr)
