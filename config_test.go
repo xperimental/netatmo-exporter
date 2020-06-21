@@ -3,6 +3,7 @@ package main
 import (
 	"reflect"
 	"testing"
+	"time"
 
 	netatmo "github.com/exzz/netatmo-api-go"
 	"github.com/sirupsen/logrus"
@@ -38,8 +39,9 @@ func TestParseConfig(t *testing.T) {
 			},
 			env: map[string]string{},
 			wantConfig: config{
-				Addr:     defaultConfig.Addr,
-				LogLevel: logLevel(logrus.InfoLevel),
+				Addr:          defaultConfig.Addr,
+				LogLevel:      logLevel(logrus.InfoLevel),
+				StaleDuration: defaultStaleDuration,
 				Netatmo: netatmo.Config{
 					ClientID:     "id",
 					ClientSecret: "secret",
@@ -57,14 +59,16 @@ func TestParseConfig(t *testing.T) {
 			env: map[string]string{
 				envVarListenAddress:       ":8080",
 				envVarLogLevel:            "debug",
+				envVarStaleDuration:       "10m",
 				envVarNetatmoClientID:     "id",
 				envVarNetatmoClientSecret: "secret",
 				envVarNetatmoUsername:     "username",
 				envVarNetatmoPassword:     "password",
 			},
 			wantConfig: config{
-				Addr:     ":8080",
-				LogLevel: logLevel(logrus.DebugLevel),
+				Addr:          ":8080",
+				LogLevel:      logLevel(logrus.DebugLevel),
+				StaleDuration: 10 * time.Minute,
 				Netatmo: netatmo.Config{
 					ClientID:     "id",
 					ClientSecret: "secret",

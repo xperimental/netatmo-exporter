@@ -8,10 +8,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const (
-	staleDataThreshold = 30 * time.Minute
-)
-
 var (
 	netatmoUp = prometheus.NewGauge(prometheus.GaugeOpts{
 		Name: "netatmo_up",
@@ -97,8 +93,9 @@ var (
 )
 
 type netatmoCollector struct {
-	log    logrus.FieldLogger
-	client *netatmo.Client
+	log            logrus.FieldLogger
+	staleThreshold time.Duration
+	client         *netatmo.Client
 }
 
 func (c *netatmoCollector) Describe(dChan chan<- *prometheus.Desc) {
@@ -140,8 +137,8 @@ func (c *netatmoCollector) collectData(ch chan<- prometheus.Metric, device *neta
 	}
 
 	date := time.Unix(*data.LastMeasure, 0)
-	if time.Since(date) > staleDataThreshold {
-		c.log.Warnf("Data is stale: %s > %s", time.Since(date), staleDataThreshold)
+	if time.Since(date) > c.staleThreshold {
+		c.log.Warnf("Data is stale: %s > %s", time.Since(date), c.staleThreshold)
 		return
 	}
 

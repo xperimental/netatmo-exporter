@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	netatmo "github.com/exzz/netatmo-api-go"
 	"github.com/sirupsen/logrus"
@@ -12,6 +13,7 @@ import (
 const (
 	envVarListenAddress       = "NETATMO_EXPORTER_ADDR"
 	envVarLogLevel            = "NETATMO_LOG_LEVEL"
+	envVarStaleDuration       = "NETATMO_AGE_STALE"
 	envVarNetatmoClientID     = "NETATMO_CLIENT_ID"
 	envVarNetatmoClientSecret = "NETATMO_CLIENT_SECRET"
 	envVarNetatmoUsername     = "NETATMO_CLIENT_USERNAME"
@@ -19,16 +21,20 @@ const (
 
 	flagListenAddress       = "addr"
 	flagLogLevel            = "log-level"
+	flagStaleDuration       = "age-stale"
 	flagNetatmoClientID     = "client-id"
 	flagNetatmoClientSecret = "client-secret"
 	flagNetatmoUsername     = "username"
 	flagNetatmoPassword     = "password"
+
+	defaultStaleDuration = 30 * time.Minute
 )
 
 var (
 	defaultConfig = config{
-		Addr:     ":9210",
-		LogLevel: logLevel(logrus.InfoLevel),
+		Addr:          ":9210",
+		LogLevel:      logLevel(logrus.InfoLevel),
+		StaleDuration: defaultStaleDuration,
 	}
 
 	errNoBinaryName          = errors.New("need the binary name as first argument")
@@ -60,9 +66,10 @@ func (l *logLevel) Set(value string) error {
 }
 
 type config struct {
-	Addr     string
-	LogLevel logLevel
-	Netatmo  netatmo.Config
+	Addr          string
+	LogLevel      logLevel
+	StaleDuration time.Duration
+	Netatmo       netatmo.Config
 }
 
 func parseConfig(args []string, getenv func(string) string) (config, error) {
@@ -75,6 +82,7 @@ func parseConfig(args []string, getenv func(string) string) (config, error) {
 	flagSet := pflag.NewFlagSet(args[0], pflag.ExitOnError)
 	flagSet.StringVarP(&cfg.Addr, flagListenAddress, "a", cfg.Addr, "Address to listen on.")
 	flagSet.Var(&cfg.LogLevel, flagLogLevel, "Sets the minimum level output through logging.")
+	flagSet.DurationVar(&cfg.StaleDuration, flagStaleDuration, cfg.StaleDuration, "Data age to consider as stale. Stale data does not create metrics anymore.")
 	flagSet.StringVarP(&cfg.Netatmo.ClientID, flagNetatmoClientID, "i", cfg.Netatmo.ClientID, "Client ID for NetAtmo app.")
 	flagSet.StringVarP(&cfg.Netatmo.ClientSecret, flagNetatmoClientSecret, "s", cfg.Netatmo.ClientSecret, "Client secret for NetAtmo app.")
 	flagSet.StringVarP(&cfg.Netatmo.Username, flagNetatmoUsername, "u", cfg.Netatmo.Username, "Username of NetAtmo account.")
@@ -117,6 +125,15 @@ func applyEnvironment(cfg *config, getenv func(string) string) error {
 		if err := cfg.LogLevel.Set(envLogLevel); err != nil {
 			return err
 		}
+	}
+
+	if envStaleDuration := getenv(envVarStaleDuration); envStaleDuration != "" {
+		duration, err := time.ParseDuration(envStaleDuration)
+		if err != nil {
+			return err
+		}
+
+		cfg.StaleDuration = duration
 	}
 
 	if envClientID := getenv(envVarNetatmoClientID); envClientID != "" {
