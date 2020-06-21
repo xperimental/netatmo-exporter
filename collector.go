@@ -1,11 +1,11 @@
 package main
 
 import (
-	"log"
 	"time"
 
 	netatmo "github.com/exzz/netatmo-api-go"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -97,19 +97,22 @@ var (
 )
 
 type netatmoCollector struct {
+	log    logrus.FieldLogger
 	client *netatmo.Client
 }
 
-func (m *netatmoCollector) Describe(dChan chan<- *prometheus.Desc) {
+func (c *netatmoCollector) Describe(dChan chan<- *prometheus.Desc) {
 	dChan <- updatedDesc
 	dChan <- tempDesc
 	dChan <- humidityDesc
 	dChan <- cotwoDesc
 }
 
-func (m *netatmoCollector) Collect(mChan chan<- prometheus.Metric) {
-	devices, err := m.client.Read()
+func (c *netatmoCollector) Collect(mChan chan<- prometheus.Metric) {
+	devices, err := c.client.Read()
 	if err != nil {
+		c.log.Errorf("Error getting data: %s", err)
+
 		netatmoUp.Set(0)
 		mChan <- netatmoUp
 		return
@@ -119,76 +122,78 @@ func (m *netatmoCollector) Collect(mChan chan<- prometheus.Metric) {
 
 	for _, dev := range devices.Devices() {
 		stationName := dev.StationName
-		collectData(mChan, dev, stationName)
+		c.collectData(mChan, dev, stationName)
 
 		for _, module := range dev.LinkedModules {
-			collectData(mChan, module, stationName)
+			c.collectData(mChan, module, stationName)
 		}
 	}
 }
 
-func collectData(ch chan<- prometheus.Metric, device *netatmo.Device, stationName string) {
+func (c *netatmoCollector) collectData(ch chan<- prometheus.Metric, device *netatmo.Device, stationName string) {
 	moduleName := device.ModuleName
 	data := device.DashboardData
 
 	if data.LastMeasure == nil {
+		c.log.Debugf("No data available.")
 		return
 	}
 
 	date := time.Unix(*data.LastMeasure, 0)
 	if time.Since(date) > staleDataThreshold {
+		c.log.Warnf("Data is stale: %s > %s", time.Since(date), staleDataThreshold)
 		return
 	}
 
-	sendMetric(ch, updatedDesc, prometheus.CounterValue, float64(date.UTC().Unix()), moduleName, stationName)
+	c.sendMetric(ch, updatedDesc, prometheus.CounterValue, float64(date.UTC().Unix()), moduleName, stationName)
 
 	if data.Temperature != nil {
-		sendMetric(ch, tempDesc, prometheus.GaugeValue, float64(*data.Temperature), moduleName, stationName)
+		c.sendMetric(ch, tempDesc, prometheus.GaugeValue, float64(*data.Temperature), moduleName, stationName)
 	}
 
 	if data.Humidity != nil {
-		sendMetric(ch, humidityDesc, prometheus.GaugeValue, float64(*data.Humidity), moduleName, stationName)
+		c.sendMetric(ch, humidityDesc, prometheus.GaugeValue, float64(*data.Humidity), moduleName, stationName)
 	}
 
 	if data.CO2 != nil {
-		sendMetric(ch, cotwoDesc, prometheus.GaugeValue, float64(*data.CO2), moduleName, stationName)
+		c.sendMetric(ch, cotwoDesc, prometheus.GaugeValue, float64(*data.CO2), moduleName, stationName)
 	}
 
 	if data.Noise != nil {
-		sendMetric(ch, noiseDesc, prometheus.GaugeValue, float64(*data.Noise), moduleName, stationName)
+		c.sendMetric(ch, noiseDesc, prometheus.GaugeValue, float64(*data.Noise), moduleName, stationName)
 	}
 
 	if data.Pressure != nil {
-		sendMetric(ch, pressureDesc, prometheus.GaugeValue, float64(*data.Pressure), moduleName, stationName)
+		c.sendMetric(ch, pressureDesc, prometheus.GaugeValue, float64(*data.Pressure), moduleName, stationName)
 	}
 
 	if data.WindStrength != nil {
-		sendMetric(ch, windStrengthDesc, prometheus.GaugeValue, float64(*data.WindStrength), moduleName, stationName)
+		c.sendMetric(ch, windStrengthDesc, prometheus.GaugeValue, float64(*data.WindStrength), moduleName, stationName)
 	}
 
 	if data.WindAngle != nil {
-		sendMetric(ch, windDirectionDesc, prometheus.GaugeValue, float64(*data.WindAngle), moduleName, stationName)
+		c.sendMetric(ch, windDirectionDesc, prometheus.GaugeValue, float64(*data.WindAngle), moduleName, stationName)
 	}
 
 	if data.Rain != nil {
-		sendMetric(ch, rainDesc, prometheus.GaugeValue, float64(*data.Rain), moduleName, stationName)
+		c.sendMetric(ch, rainDesc, prometheus.GaugeValue, float64(*data.Rain), moduleName, stationName)
 	}
 
 	if device.BatteryPercent != nil {
-		sendMetric(ch, batteryDesc, prometheus.GaugeValue, float64(*device.BatteryPercent), moduleName, stationName)
+		c.sendMetric(ch, batteryDesc, prometheus.GaugeValue, float64(*device.BatteryPercent), moduleName, stationName)
 	}
 	if device.WifiStatus != nil {
-		sendMetric(ch, wifiDesc, prometheus.GaugeValue, float64(*device.WifiStatus), moduleName, stationName)
+		c.sendMetric(ch, wifiDesc, prometheus.GaugeValue, float64(*device.WifiStatus), moduleName, stationName)
 	}
 	if device.RFStatus != nil {
-		sendMetric(ch, rfDesc, prometheus.GaugeValue, float64(*device.RFStatus), moduleName, stationName)
+		c.sendMetric(ch, rfDesc, prometheus.GaugeValue, float64(*device.RFStatus), moduleName, stationName)
 	}
 }
 
-func sendMetric(ch chan<- prometheus.Metric, desc *prometheus.Desc, valueType prometheus.ValueType, value float64, moduleName string, stationName string) {
+func (c *netatmoCollector) sendMetric(ch chan<- prometheus.Metric, desc *prometheus.Desc, valueType prometheus.ValueType, value float64, moduleName string, stationName string) {
 	m, err := prometheus.NewConstMetric(desc, valueType, value, moduleName, stationName)
 	if err != nil {
-		log.Printf("Error creating %s metric: %s", updatedDesc.String(), err)
+		c.log.Errorf("Error creating %s metric: %s", updatedDesc.String(), err)
 	}
 	ch <- m
 }
