@@ -19,14 +19,21 @@ If you have a working Go installation, getting the binary should be as simple as
 ```bash
 git clone https://github.com/xperimental/netatmo-exporter
 cd netatmo-exporter
-go build .
+make
 ```
 
-There is also a `build-arm.sh` script if you want to run the exporter on an ARMv7 device.
+If you want to build the exporter for a different OS or architecture, you can specify arguments to the Makefile:
+
+```bash
+# For 32-bit ARM on Linux
+make GO_ARCH=arm
+# For 64-bit ARM on Linux
+make GO_ARCH=arm64
+```
 
 ## NetAtmo client credentials
 
-This application tries to get data from the NetAtmo API. For that to work you will need to create an application in the [NetAtmo developer console](https://dev.netatmo.com/dev/myaccount), so that you can get a Client ID and secret.
+This application tries to get data from the NetAtmo API. For that to work you will need to create an application in the [NetAtmo developer console](https://dev.netatmo.com/apps/), so that you can get a Client ID and secret.
 
 ## Usage
 
