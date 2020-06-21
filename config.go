@@ -73,12 +73,12 @@ func parseConfig(args []string, getenv func(string) string) (config, error) {
 	}
 
 	flagSet := pflag.NewFlagSet(args[0], pflag.ExitOnError)
-	flagSet.StringVarP(&cfg.Addr, "addr", "a", cfg.Addr, "Address to listen on.")
+	flagSet.StringVarP(&cfg.Addr, flagListenAddress, "a", cfg.Addr, "Address to listen on.")
 	flagSet.Var(&cfg.LogLevel, flagLogLevel, "Sets the minimum level output through logging.")
-	flagSet.StringVarP(&cfg.Netatmo.ClientID, "client-id", "i", cfg.Netatmo.ClientID, "Client ID for NetAtmo app.")
-	flagSet.StringVarP(&cfg.Netatmo.ClientSecret, "client-secret", "s", cfg.Netatmo.ClientSecret, "Client secret for NetAtmo app.")
-	flagSet.StringVarP(&cfg.Netatmo.Username, "username", "u", cfg.Netatmo.Username, "Username of NetAtmo account.")
-	flagSet.StringVarP(&cfg.Netatmo.Password, "password", "p", cfg.Netatmo.Password, "Password of NetAtmo account.")
+	flagSet.StringVarP(&cfg.Netatmo.ClientID, flagNetatmoClientID, "i", cfg.Netatmo.ClientID, "Client ID for NetAtmo app.")
+	flagSet.StringVarP(&cfg.Netatmo.ClientSecret, flagNetatmoClientSecret, "s", cfg.Netatmo.ClientSecret, "Client secret for NetAtmo app.")
+	flagSet.StringVarP(&cfg.Netatmo.Username, flagNetatmoUsername, "u", cfg.Netatmo.Username, "Username of NetAtmo account.")
+	flagSet.StringVarP(&cfg.Netatmo.Password, flagNetatmoPassword, "p", cfg.Netatmo.Password, "Password of NetAtmo account.")
 	flagSet.Parse(args[1:])
 
 	if err := applyEnvironment(&cfg, getenv); err != nil {
