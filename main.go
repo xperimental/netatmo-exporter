@@ -41,6 +41,7 @@ func main() {
 	prometheus.MustRegister(metrics)
 
 	http.Handle("/metrics", promhttp.HandlerFor(prometheus.DefaultGatherer, promhttp.HandlerOpts{}))
+	http.Handle("/version", versionHandler(log))
 	http.Handle("/", http.RedirectHandler("/metrics", http.StatusFound))
 
 	log.Infof("Listen on %s...", cfg.Addr)
