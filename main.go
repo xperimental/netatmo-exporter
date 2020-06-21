@@ -27,6 +27,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error in configuration: %s", err)
 	}
+	log.SetLevel(logrus.Level(cfg.LogLevel))
 
 	log.Infof("Login as %s", cfg.Netatmo.Username)
 	client, err := netatmo.NewClient(cfg.Netatmo)
