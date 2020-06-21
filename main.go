@@ -36,8 +36,9 @@ func main() {
 	}
 
 	metrics := &netatmoCollector{
-		log:    log,
-		client: client,
+		log:            log,
+		client:         client,
+		staleThreshold: cfg.StaleDuration,
 	}
 	prometheus.MustRegister(metrics)
 
