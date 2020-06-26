@@ -13,6 +13,7 @@ import (
 const (
 	envVarListenAddress       = "NETATMO_EXPORTER_ADDR"
 	envVarLogLevel            = "NETATMO_LOG_LEVEL"
+	envVarRefreshInterval     = "NETATMO_REFRESH_INTERVAL"
 	envVarStaleDuration       = "NETATMO_AGE_STALE"
 	envVarNetatmoClientID     = "NETATMO_CLIENT_ID"
 	envVarNetatmoClientSecret = "NETATMO_CLIENT_SECRET"
@@ -21,20 +22,23 @@ const (
 
 	flagListenAddress       = "addr"
 	flagLogLevel            = "log-level"
+	flagRefreshInterval     = "refresh-interval"
 	flagStaleDuration       = "age-stale"
 	flagNetatmoClientID     = "client-id"
 	flagNetatmoClientSecret = "client-secret"
 	flagNetatmoUsername     = "username"
 	flagNetatmoPassword     = "password"
 
-	defaultStaleDuration = 30 * time.Minute
+	defaultRefreshInterval = 8 * time.Minute
+	defaultStaleDuration   = 30 * time.Minute
 )
 
 var (
 	defaultConfig = config{
-		Addr:          ":9210",
-		LogLevel:      logLevel(logrus.InfoLevel),
-		StaleDuration: defaultStaleDuration,
+		Addr:            ":9210",
+		LogLevel:        logLevel(logrus.InfoLevel),
+		RefreshInterval: defaultRefreshInterval,
+		StaleDuration:   defaultStaleDuration,
 	}
 
 	errNoBinaryName          = errors.New("need the binary name as first argument")
@@ -66,10 +70,11 @@ func (l *logLevel) Set(value string) error {
 }
 
 type config struct {
-	Addr          string
-	LogLevel      logLevel
-	StaleDuration time.Duration
-	Netatmo       netatmo.Config
+	Addr            string
+	LogLevel        logLevel
+	RefreshInterval time.Duration
+	StaleDuration   time.Duration
+	Netatmo         netatmo.Config
 }
 
 func parseConfig(args []string, getenv func(string) string) (config, error) {
@@ -82,6 +87,7 @@ func parseConfig(args []string, getenv func(string) string) (config, error) {
 	flagSet := pflag.NewFlagSet(args[0], pflag.ExitOnError)
 	flagSet.StringVarP(&cfg.Addr, flagListenAddress, "a", cfg.Addr, "Address to listen on.")
 	flagSet.Var(&cfg.LogLevel, flagLogLevel, "Sets the minimum level output through logging.")
+	flagSet.DurationVar(&cfg.RefreshInterval, flagRefreshInterval, cfg.RefreshInterval, "Time interval used for internal caching of NetAtmo sensor data.")
 	flagSet.DurationVar(&cfg.StaleDuration, flagStaleDuration, cfg.StaleDuration, "Data age to consider as stale. Stale data does not create metrics anymore.")
 	flagSet.StringVarP(&cfg.Netatmo.ClientID, flagNetatmoClientID, "i", cfg.Netatmo.ClientID, "Client ID for NetAtmo app.")
 	flagSet.StringVarP(&cfg.Netatmo.ClientSecret, flagNetatmoClientSecret, "s", cfg.Netatmo.ClientSecret, "Client secret for NetAtmo app.")
@@ -113,6 +119,10 @@ func parseConfig(args []string, getenv func(string) string) (config, error) {
 		return config{}, errNoNetatmoPassword
 	}
 
+	if cfg.StaleDuration < cfg.RefreshInterval {
+		return config{}, fmt.Errorf("stale duration smaller than refresh interval: %s < %s", cfg.StaleDuration, cfg.RefreshInterval)
+	}
+
 	return cfg, nil
 }
 
@@ -125,6 +135,15 @@ func applyEnvironment(cfg *config, getenv func(string) string) error {
 		if err := cfg.LogLevel.Set(envLogLevel); err != nil {
 			return err
 		}
+	}
+
+	if envRefreshInterval := getenv(envVarRefreshInterval); envRefreshInterval != "" {
+		duration, err := time.ParseDuration(envRefreshInterval)
+		if err != nil {
+			return err
+		}
+
+		cfg.RefreshInterval = duration
 	}
 
 	if envStaleDuration := getenv(envVarStaleDuration); envStaleDuration != "" {

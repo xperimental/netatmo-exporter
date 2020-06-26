@@ -39,9 +39,10 @@ func TestParseConfig(t *testing.T) {
 			},
 			env: map[string]string{},
 			wantConfig: config{
-				Addr:          defaultConfig.Addr,
-				LogLevel:      logLevel(logrus.InfoLevel),
-				StaleDuration: defaultStaleDuration,
+				Addr:            defaultConfig.Addr,
+				LogLevel:        logLevel(logrus.InfoLevel),
+				RefreshInterval: defaultRefreshInterval,
+				StaleDuration:   defaultStaleDuration,
 				Netatmo: netatmo.Config{
 					ClientID:     "id",
 					ClientSecret: "secret",
@@ -59,6 +60,7 @@ func TestParseConfig(t *testing.T) {
 			env: map[string]string{
 				envVarListenAddress:       ":8080",
 				envVarLogLevel:            "debug",
+				envVarRefreshInterval:     "5m",
 				envVarStaleDuration:       "10m",
 				envVarNetatmoClientID:     "id",
 				envVarNetatmoClientSecret: "secret",
@@ -66,9 +68,10 @@ func TestParseConfig(t *testing.T) {
 				envVarNetatmoPassword:     "password",
 			},
 			wantConfig: config{
-				Addr:          ":8080",
-				LogLevel:      logLevel(logrus.DebugLevel),
-				StaleDuration: 10 * time.Minute,
+				Addr:            ":8080",
+				LogLevel:        logLevel(logrus.DebugLevel),
+				RefreshInterval: 5 * time.Minute,
+				StaleDuration:   10 * time.Minute,
 				Netatmo: netatmo.Config{
 					ClientID:     "id",
 					ClientSecret: "secret",
