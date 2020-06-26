@@ -138,7 +138,7 @@ func (c *netatmoCollector) collectData(ch chan<- prometheus.Metric, device *neta
 
 	date := time.Unix(*data.LastMeasure, 0)
 	if time.Since(date) > c.staleThreshold {
-		c.log.Warnf("Data is stale for %s: %s > %s", moduleName, time.Since(date), c.staleThreshold)
+		c.log.Debugf("Data is stale for %s: %s > %s", moduleName, time.Since(date), c.staleThreshold)
 		return
 	}
 
