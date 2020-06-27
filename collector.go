@@ -1,6 +1,7 @@
 package main
 
 import (
+	"sync"
 	"time"
 
 	netatmo "github.com/exzz/netatmo-api-go"
@@ -11,7 +12,18 @@ import (
 var (
 	prefix        = "netatmo_"
 	netatmoUpDesc = prometheus.NewDesc(prefix+"up",
-		"Zero if there was an error scraping the Netatmo API.",
+		"Zero if there was an error during the last refresh try.",
+		nil, nil)
+
+	refreshPrefix        = prefix + "last_refresh"
+	refreshTimestampDesc = prometheus.NewDesc(
+		refreshPrefix+"_time",
+		"Contains the time of the last refresh try, successful or not.",
+		nil, nil)
+
+	cacheTimestampDesc = prometheus.NewDesc(
+		prefix+"cache_updated_time",
+		"Contains the time of the cached data.",
 		nil, nil)
 
 	varLabels = []string{
@@ -93,9 +105,15 @@ var (
 )
 
 type netatmoCollector struct {
-	log            logrus.FieldLogger
-	staleThreshold time.Duration
-	client         *netatmo.Client
+	log              logrus.FieldLogger
+	refreshInterval  time.Duration
+	staleThreshold   time.Duration
+	client           *netatmo.Client
+	lastRefresh      time.Time
+	lastRefreshError error
+	cacheLock        sync.RWMutex
+	cacheTimestamp   time.Time
+	cachedData       *netatmo.DeviceCollection
 }
 
 func (c *netatmoCollector) Describe(dChan chan<- *prometheus.Desc) {
@@ -106,23 +124,49 @@ func (c *netatmoCollector) Describe(dChan chan<- *prometheus.Desc) {
 }
 
 func (c *netatmoCollector) Collect(mChan chan<- prometheus.Metric) {
-	devices, err := c.client.Read()
-	if err != nil {
-		c.log.Errorf("Error getting data: %s", err)
-
-		c.sendMetric(mChan, netatmoUpDesc, prometheus.GaugeValue, 0.0)
-		return
+	now := time.Now()
+	if now.Sub(c.lastRefresh) >= c.refreshInterval {
+		go c.refreshData(now)
 	}
-	c.sendMetric(mChan, netatmoUpDesc, prometheus.GaugeValue, 1.0)
 
-	for _, dev := range devices.Devices() {
-		stationName := dev.StationName
-		c.collectData(mChan, dev, stationName)
+	upValue := 1.0
+	if c.lastRefresh.IsZero() || c.lastRefreshError != nil {
+		upValue = 0
+	}
+	c.sendMetric(mChan, netatmoUpDesc, prometheus.GaugeValue, upValue)
+	c.sendMetric(mChan, refreshTimestampDesc, prometheus.GaugeValue, convertTime(c.lastRefresh))
 
-		for _, module := range dev.LinkedModules {
-			c.collectData(mChan, module, stationName)
+	c.cacheLock.RLock()
+	defer c.cacheLock.RUnlock()
+
+	c.sendMetric(mChan, cacheTimestampDesc, prometheus.GaugeValue, convertTime(c.cacheTimestamp))
+	if c.cachedData != nil {
+		for _, dev := range c.cachedData.Devices() {
+			stationName := dev.StationName
+			c.collectData(mChan, dev, stationName)
+
+			for _, module := range dev.LinkedModules {
+				c.collectData(mChan, module, stationName)
+			}
 		}
 	}
+}
+
+func (c *netatmoCollector) refreshData(now time.Time) {
+	c.log.Debugf("Refresh interval elapsed: %s > %s", now.Sub(c.lastRefresh), c.refreshInterval)
+	c.lastRefresh = now
+
+	devices, err := c.client.Read()
+	if err != nil {
+		c.log.Errorf("Error during refresh: %s", err)
+		c.lastRefreshError = err
+		return
+	}
+
+	c.cacheLock.Lock()
+	defer c.cacheLock.Unlock()
+	c.cacheTimestamp = now
+	c.cachedData = devices
 }
 
 func (c *netatmoCollector) collectData(ch chan<- prometheus.Metric, device *netatmo.Device, stationName string) {
@@ -192,4 +236,12 @@ func (c *netatmoCollector) sendMetric(ch chan<- prometheus.Metric, desc *prometh
 		return
 	}
 	ch <- m
+}
+
+func convertTime(t time.Time) float64 {
+	if t.IsZero() {
+		return 0.0
+	}
+
+	return float64(t.Unix())
 }
