@@ -15,13 +15,17 @@ var (
 		"Zero if there was an error during the last refresh try.",
 		nil, nil)
 
-	refreshPrefix        = prefix + "last_refresh"
+	refreshIntervalDesc = prometheus.NewDesc(
+		prefix+"refresh_interval_seconds",
+		"Contains the configured refresh interval in seconds. This is provided as a convenience for calculations with the cache update time.",
+		nil, nil)
+	refreshPrefix        = prefix + "last_refresh_"
 	refreshTimestampDesc = prometheus.NewDesc(
-		refreshPrefix+"_time",
+		refreshPrefix+"time",
 		"Contains the time of the last refresh try, successful or not.",
 		nil, nil)
 	refreshDurationDesc = prometheus.NewDesc(
-		refreshPrefix+"_duration_seconds",
+		refreshPrefix+"duration_seconds",
 		"Contains the time it took for the last refresh to complete, even if it was unsuccessful.",
 		nil, nil)
 
@@ -139,6 +143,7 @@ func (c *NetatmoCollector) Collect(mChan chan<- prometheus.Metric) {
 		upValue = 0
 	}
 	c.sendMetric(mChan, netatmoUpDesc, prometheus.GaugeValue, upValue)
+	c.sendMetric(mChan, refreshIntervalDesc, prometheus.GaugeValue, c.RefreshInterval.Seconds())
 	c.sendMetric(mChan, refreshTimestampDesc, prometheus.GaugeValue, convertTime(c.lastRefresh))
 	c.sendMetric(mChan, refreshDurationDesc, prometheus.GaugeValue, c.lastRefreshDuration.Seconds())
 
