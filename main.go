@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"os"
+	"time"
 
 	netatmo "github.com/exzz/netatmo-api-go"
 	"github.com/prometheus/client_golang/prometheus"
@@ -44,6 +45,9 @@ func main() {
 		StaleThreshold:  cfg.StaleDuration,
 	}
 	prometheus.MustRegister(metrics)
+
+	// Trigger first refresh
+	metrics.RefreshData(time.Now())
 
 	http.Handle("/metrics", promhttp.HandlerFor(prometheus.DefaultGatherer, promhttp.HandlerOpts{}))
 	http.Handle("/version", versionHandler(log))

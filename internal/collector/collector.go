@@ -112,6 +112,7 @@ var (
 		nil)
 )
 
+// NetatmoCollector is a Prometheus collector for Netatmo sensor values.
 type NetatmoCollector struct {
 	Log                 logrus.FieldLogger
 	RefreshInterval     time.Duration
@@ -135,7 +136,7 @@ func (c *NetatmoCollector) Describe(dChan chan<- *prometheus.Desc) {
 func (c *NetatmoCollector) Collect(mChan chan<- prometheus.Metric) {
 	now := time.Now()
 	if now.Sub(c.lastRefresh) >= c.RefreshInterval {
-		go c.refreshData(now)
+		go c.RefreshData(now)
 	}
 
 	upValue := 1.0
@@ -163,8 +164,9 @@ func (c *NetatmoCollector) Collect(mChan chan<- prometheus.Metric) {
 	}
 }
 
-func (c *NetatmoCollector) refreshData(now time.Time) {
-	c.Log.Debugf("Refresh interval elapsed: %s > %s", now.Sub(c.lastRefresh), c.RefreshInterval)
+// RefreshData causes the collector to try to refresh the cached data.
+func (c *NetatmoCollector) RefreshData(now time.Time) {
+	c.Log.Debugf("Refreshing data. Time since last refresh: %s", now.Sub(c.lastRefresh))
 	c.lastRefresh = now
 
 	defer func(start time.Time) {
