@@ -20,6 +20,10 @@ var (
 		refreshPrefix+"_time",
 		"Contains the time of the last refresh try, successful or not.",
 		nil, nil)
+	refreshDurationDesc = prometheus.NewDesc(
+		refreshPrefix+"_duration_seconds",
+		"Contains the time it took for the last refresh to complete, even if it was unsuccessful.",
+		nil, nil)
 
 	cacheTimestampDesc = prometheus.NewDesc(
 		prefix+"cache_updated_time",
@@ -105,15 +109,16 @@ var (
 )
 
 type NetatmoCollector struct {
-	Log              logrus.FieldLogger
-	RefreshInterval  time.Duration
-	StaleThreshold   time.Duration
-	Client           *netatmo.Client
-	lastRefresh      time.Time
-	lastRefreshError error
-	cacheLock        sync.RWMutex
-	cacheTimestamp   time.Time
-	cachedData       *netatmo.DeviceCollection
+	Log                 logrus.FieldLogger
+	RefreshInterval     time.Duration
+	StaleThreshold      time.Duration
+	Client              *netatmo.Client
+	lastRefresh         time.Time
+	lastRefreshError    error
+	lastRefreshDuration time.Duration
+	cacheLock           sync.RWMutex
+	cacheTimestamp      time.Time
+	cachedData          *netatmo.DeviceCollection
 }
 
 func (c *NetatmoCollector) Describe(dChan chan<- *prometheus.Desc) {
@@ -135,6 +140,7 @@ func (c *NetatmoCollector) Collect(mChan chan<- prometheus.Metric) {
 	}
 	c.sendMetric(mChan, netatmoUpDesc, prometheus.GaugeValue, upValue)
 	c.sendMetric(mChan, refreshTimestampDesc, prometheus.GaugeValue, convertTime(c.lastRefresh))
+	c.sendMetric(mChan, refreshDurationDesc, prometheus.GaugeValue, c.lastRefreshDuration.Seconds())
 
 	c.cacheLock.RLock()
 	defer c.cacheLock.RUnlock()
@@ -155,6 +161,10 @@ func (c *NetatmoCollector) Collect(mChan chan<- prometheus.Metric) {
 func (c *NetatmoCollector) refreshData(now time.Time) {
 	c.Log.Debugf("Refresh interval elapsed: %s > %s", now.Sub(c.lastRefresh), c.RefreshInterval)
 	c.lastRefresh = now
+
+	defer func(start time.Time) {
+		c.lastRefreshDuration = time.Since(start)
+	}(time.Now())
 
 	devices, err := c.Client.Read()
 	if err != nil {
