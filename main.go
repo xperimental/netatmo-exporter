@@ -8,6 +8,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
+	"github.com/xperimental/netatmo-exporter/internal/config"
 )
 
 var (
@@ -23,7 +24,7 @@ var (
 )
 
 func main() {
-	cfg, err := parseConfig(os.Args, os.Getenv)
+	cfg, err := config.Parse(os.Args, os.Getenv)
 	if err != nil {
 		log.Fatalf("Error in configuration: %s", err)
 	}

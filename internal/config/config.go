@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"errors"
@@ -34,7 +34,7 @@ const (
 )
 
 var (
-	defaultConfig = config{
+	defaultConfig = Config{
 		Addr:            ":9210",
 		LogLevel:        logLevel(logrus.InfoLevel),
 		RefreshInterval: defaultRefreshInterval,
@@ -69,7 +69,8 @@ func (l *logLevel) Set(value string) error {
 	return nil
 }
 
-type config struct {
+// Config contains the configuration options.
+type Config struct {
 	Addr            string
 	LogLevel        logLevel
 	RefreshInterval time.Duration
@@ -77,7 +78,8 @@ type config struct {
 	Netatmo         netatmo.Config
 }
 
-func parseConfig(args []string, getenv func(string) string) (config, error) {
+// Parse takes the arguments and environment variables provided and creates the Config from that.
+func Parse(args []string, getenv func(string) string) (Config, error) {
 	cfg := defaultConfig
 
 	if len(args) < 1 {
@@ -96,37 +98,37 @@ func parseConfig(args []string, getenv func(string) string) (config, error) {
 	flagSet.Parse(args[1:])
 
 	if err := applyEnvironment(&cfg, getenv); err != nil {
-		return config{}, fmt.Errorf("error in environment: %s", err)
+		return Config{}, fmt.Errorf("error in environment: %s", err)
 	}
 
 	if len(cfg.Addr) == 0 {
-		return config{}, errNoListenAddress
+		return Config{}, errNoListenAddress
 	}
 
 	if len(cfg.Netatmo.ClientID) == 0 {
-		return config{}, errNoNetatmoClientID
+		return Config{}, errNoNetatmoClientID
 	}
 
 	if len(cfg.Netatmo.ClientSecret) == 0 {
-		return config{}, errNoNetatmoClientSecret
+		return Config{}, errNoNetatmoClientSecret
 	}
 
 	if len(cfg.Netatmo.Username) == 0 {
-		return config{}, errNoNetatmoUsername
+		return Config{}, errNoNetatmoUsername
 	}
 
 	if len(cfg.Netatmo.Password) == 0 {
-		return config{}, errNoNetatmoPassword
+		return Config{}, errNoNetatmoPassword
 	}
 
 	if cfg.StaleDuration < cfg.RefreshInterval {
-		return config{}, fmt.Errorf("stale duration smaller than refresh interval: %s < %s", cfg.StaleDuration, cfg.RefreshInterval)
+		return Config{}, fmt.Errorf("stale duration smaller than refresh interval: %s < %s", cfg.StaleDuration, cfg.RefreshInterval)
 	}
 
 	return cfg, nil
 }
 
-func applyEnvironment(cfg *config, getenv func(string) string) error {
+func applyEnvironment(cfg *Config, getenv func(string) string) error {
 	if envAddr := getenv(envVarListenAddress); envAddr != "" {
 		cfg.Addr = envAddr
 	}

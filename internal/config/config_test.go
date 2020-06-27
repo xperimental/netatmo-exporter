@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"reflect"
@@ -14,14 +14,14 @@ func TestParseConfig(t *testing.T) {
 		name       string
 		args       []string
 		env        map[string]string
-		wantConfig config
+		wantConfig Config
 		wantErr    error
 	}{
 		{
 			name:       "no args",
 			args:       []string{},
 			env:        map[string]string{},
-			wantConfig: config{},
+			wantConfig: Config{},
 			wantErr:    errNoBinaryName,
 		},
 		{
@@ -38,7 +38,7 @@ func TestParseConfig(t *testing.T) {
 				"password",
 			},
 			env: map[string]string{},
-			wantConfig: config{
+			wantConfig: Config{
 				Addr:            defaultConfig.Addr,
 				LogLevel:        logLevel(logrus.InfoLevel),
 				RefreshInterval: defaultRefreshInterval,
@@ -67,7 +67,7 @@ func TestParseConfig(t *testing.T) {
 				envVarNetatmoUsername:     "username",
 				envVarNetatmoPassword:     "password",
 			},
-			wantConfig: config{
+			wantConfig: Config{
 				Addr:            ":8080",
 				LogLevel:        logLevel(logrus.DebugLevel),
 				RefreshInterval: 5 * time.Minute,
@@ -97,7 +97,7 @@ func TestParseConfig(t *testing.T) {
 				"password",
 			},
 			env: map[string]string{},
-			wantConfig: config{
+			wantConfig: Config{
 				Addr: defaultConfig.Addr,
 				Netatmo: netatmo.Config{
 					ClientID:     "id",
@@ -120,7 +120,7 @@ func TestParseConfig(t *testing.T) {
 				"password",
 			},
 			env: map[string]string{},
-			wantConfig: config{
+			wantConfig: Config{
 				Addr: defaultConfig.Addr,
 				Netatmo: netatmo.Config{
 					ClientID:     "id",
@@ -143,7 +143,7 @@ func TestParseConfig(t *testing.T) {
 				"password",
 			},
 			env: map[string]string{},
-			wantConfig: config{
+			wantConfig: Config{
 				Addr: defaultConfig.Addr,
 				Netatmo: netatmo.Config{
 					ClientID:     "id",
@@ -166,7 +166,7 @@ func TestParseConfig(t *testing.T) {
 				"password",
 			},
 			env: map[string]string{},
-			wantConfig: config{
+			wantConfig: Config{
 				Addr: defaultConfig.Addr,
 				Netatmo: netatmo.Config{
 					ClientID:     "id",
@@ -189,7 +189,7 @@ func TestParseConfig(t *testing.T) {
 				"username",
 			},
 			env: map[string]string{},
-			wantConfig: config{
+			wantConfig: Config{
 				Addr: defaultConfig.Addr,
 				Netatmo: netatmo.Config{
 					ClientID:     "id",
@@ -212,7 +212,7 @@ func TestParseConfig(t *testing.T) {
 				return tt.env[key]
 			}
 
-			config, err := parseConfig(tt.args, getenv)
+			config, err := Parse(tt.args, getenv)
 
 			if err != tt.wantErr {
 				t.Errorf("got error %q, want %q", err, tt.wantErr)
