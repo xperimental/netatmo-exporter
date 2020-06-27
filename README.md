@@ -40,11 +40,14 @@ This application tries to get data from the NetAtmo API. For that to work you wi
 ```plain
 $ netatmo-exporter --help
 Usage of netatmo-exporter:
-  -a, --addr string            Address to listen on. (default ":9210")
-  -i, --client-id string       Client ID for NetAtmo app.
-  -s, --client-secret string   Client secret for NetAtmo app.
-  -p, --password string        Password of NetAtmo account.
-  -u, --username string        Username of NetAtmo account.
+  -a, --addr string                 Address to listen on. (default ":9210")
+      --age-stale duration          Data age to consider as stale. Stale data does not create metrics anymore. (default 30m0s)
+  -i, --client-id string            Client ID for NetAtmo app.
+  -s, --client-secret string        Client secret for NetAtmo app.
+      --log-level level             Sets the minimum level output through logging. (default info)
+  -p, --password string             Password of NetAtmo account.
+      --refresh-interval duration   Time interval used for internal caching of NetAtmo sensor data. (default 8m0s)
+  -u, --username string             Username of NetAtmo account.
 ```
 
 After starting the server will offer the metrics on the `/metrics` endpoint, which can be used as a target for prometheus.
@@ -59,9 +62,11 @@ You can pass credentials either via command line arguments (see next section) or
 * `NETATMO_CLIENT_USERNAME` Username of NetAtmo account
 * `NETATMO_CLIENT_PASSWORD` Password of NetAtmo account
 
-### Scrape interval
+### Cached data
 
-The exporter will query the Netatmo API every time it is scraped by prometheus. It does not make sense to scrape the Netatmo API with a small interval as the sensors only update their data every few minutes, so don't forget to set a slower scrape interval for this exporter:
+The exporter has an in-memory cache for the data retrieved from the Netatmo API. The purpose of this is to decouple making requests to the Netatmo API from the scraping interval as the data from Netatmo does not update nearly as fast as the default scrape interval of Prometheus. Per the Netatmo documentation the sensor data is updated every ten minutes. The default "refresh interval" of the exporter is set a bit below this (8 minutes), but still much higher than the default Prometheus scrape interval (15 seconds).
+
+You can still set a slower scrape interval for this exporter if you like:
 
 ```yml
 scrape_configs:
