@@ -1,4 +1,4 @@
-package main
+package collector
 
 import (
 	"sync"
@@ -104,11 +104,11 @@ var (
 		nil)
 )
 
-type netatmoCollector struct {
-	log              logrus.FieldLogger
-	refreshInterval  time.Duration
-	staleThreshold   time.Duration
-	client           *netatmo.Client
+type NetatmoCollector struct {
+	Log              logrus.FieldLogger
+	RefreshInterval  time.Duration
+	StaleThreshold   time.Duration
+	Client           *netatmo.Client
 	lastRefresh      time.Time
 	lastRefreshError error
 	cacheLock        sync.RWMutex
@@ -116,16 +116,16 @@ type netatmoCollector struct {
 	cachedData       *netatmo.DeviceCollection
 }
 
-func (c *netatmoCollector) Describe(dChan chan<- *prometheus.Desc) {
+func (c *NetatmoCollector) Describe(dChan chan<- *prometheus.Desc) {
 	dChan <- updatedDesc
 	dChan <- tempDesc
 	dChan <- humidityDesc
 	dChan <- cotwoDesc
 }
 
-func (c *netatmoCollector) Collect(mChan chan<- prometheus.Metric) {
+func (c *NetatmoCollector) Collect(mChan chan<- prometheus.Metric) {
 	now := time.Now()
-	if now.Sub(c.lastRefresh) >= c.refreshInterval {
+	if now.Sub(c.lastRefresh) >= c.RefreshInterval {
 		go c.refreshData(now)
 	}
 
@@ -152,13 +152,13 @@ func (c *netatmoCollector) Collect(mChan chan<- prometheus.Metric) {
 	}
 }
 
-func (c *netatmoCollector) refreshData(now time.Time) {
-	c.log.Debugf("Refresh interval elapsed: %s > %s", now.Sub(c.lastRefresh), c.refreshInterval)
+func (c *NetatmoCollector) refreshData(now time.Time) {
+	c.Log.Debugf("Refresh interval elapsed: %s > %s", now.Sub(c.lastRefresh), c.RefreshInterval)
 	c.lastRefresh = now
 
-	devices, err := c.client.Read()
+	devices, err := c.Client.Read()
 	if err != nil {
-		c.log.Errorf("Error during refresh: %s", err)
+		c.Log.Errorf("Error during refresh: %s", err)
 		c.lastRefreshError = err
 		return
 	}
@@ -169,18 +169,18 @@ func (c *netatmoCollector) refreshData(now time.Time) {
 	c.cachedData = devices
 }
 
-func (c *netatmoCollector) collectData(ch chan<- prometheus.Metric, device *netatmo.Device, stationName string) {
+func (c *NetatmoCollector) collectData(ch chan<- prometheus.Metric, device *netatmo.Device, stationName string) {
 	moduleName := device.ModuleName
 	data := device.DashboardData
 
 	if data.LastMeasure == nil {
-		c.log.Debugf("No data available.")
+		c.Log.Debugf("No data available.")
 		return
 	}
 
 	date := time.Unix(*data.LastMeasure, 0)
-	if time.Since(date) > c.staleThreshold {
-		c.log.Debugf("Data is stale for %s: %s > %s", moduleName, time.Since(date), c.staleThreshold)
+	if time.Since(date) > c.StaleThreshold {
+		c.Log.Debugf("Data is stale for %s: %s > %s", moduleName, time.Since(date), c.StaleThreshold)
 		return
 	}
 
@@ -229,10 +229,10 @@ func (c *netatmoCollector) collectData(ch chan<- prometheus.Metric, device *neta
 	}
 }
 
-func (c *netatmoCollector) sendMetric(ch chan<- prometheus.Metric, desc *prometheus.Desc, valueType prometheus.ValueType, value float64, labelValues ...string) {
+func (c *NetatmoCollector) sendMetric(ch chan<- prometheus.Metric, desc *prometheus.Desc, valueType prometheus.ValueType, value float64, labelValues ...string) {
 	m, err := prometheus.NewConstMetric(desc, valueType, value, labelValues...)
 	if err != nil {
-		c.log.Errorf("Error creating %s metric: %s", updatedDesc.String(), err)
+		c.Log.Errorf("Error creating %s metric: %s", updatedDesc.String(), err)
 		return
 	}
 	ch <- m

@@ -8,6 +8,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
+	"github.com/xperimental/netatmo-exporter/internal/collector"
 	"github.com/xperimental/netatmo-exporter/internal/config"
 )
 
@@ -36,11 +37,11 @@ func main() {
 		log.Fatalf("Error creating client: %s", err)
 	}
 
-	metrics := &netatmoCollector{
-		log:             log,
-		client:          client,
-		refreshInterval: cfg.RefreshInterval,
-		staleThreshold:  cfg.StaleDuration,
+	metrics := &collector.NetatmoCollector{
+		Log:             log,
+		Client:          client,
+		RefreshInterval: cfg.RefreshInterval,
+		StaleThreshold:  cfg.StaleDuration,
 	}
 	prometheus.MustRegister(metrics)
 
