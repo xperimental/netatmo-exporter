@@ -9,84 +9,84 @@ import (
 )
 
 var (
-	netatmoUp = prometheus.NewGauge(prometheus.GaugeOpts{
-		Name: "netatmo_up",
-		Help: "Zero if there was an error scraping the Netatmo API.",
-	})
+	prefix        = "netatmo_"
+	netatmoUpDesc = prometheus.NewDesc(prefix+"up",
+		"Zero if there was an error scraping the Netatmo API.",
+		nil, nil)
 
 	varLabels = []string{
 		"module",
 		"station",
 	}
 
-	prefix = "netatmo_sensor_"
+	sensorPrefix = prefix + "sensor_"
 
 	updatedDesc = prometheus.NewDesc(
-		prefix+"updated",
+		sensorPrefix+"updated",
 		"Timestamp of last update",
 		varLabels,
 		nil)
 
 	tempDesc = prometheus.NewDesc(
-		prefix+"temperature_celsius",
+		sensorPrefix+"temperature_celsius",
 		"Temperature measurement in celsius",
 		varLabels,
 		nil)
 
 	humidityDesc = prometheus.NewDesc(
-		prefix+"humidity_percent",
+		sensorPrefix+"humidity_percent",
 		"Relative humidity measurement in percent",
 		varLabels,
 		nil)
 
 	cotwoDesc = prometheus.NewDesc(
-		prefix+"co2_ppm",
+		sensorPrefix+"co2_ppm",
 		"Carbondioxide measurement in parts per million",
 		varLabels,
 		nil)
 
 	noiseDesc = prometheus.NewDesc(
-		prefix+"noise_db",
+		sensorPrefix+"noise_db",
 		"Noise measurement in decibels",
 		varLabels,
 		nil)
 
 	pressureDesc = prometheus.NewDesc(
-		prefix+"pressure_mb",
+		sensorPrefix+"pressure_mb",
 		"Atmospheric pressure measurement in millibar",
 		varLabels,
 		nil)
 
 	windStrengthDesc = prometheus.NewDesc(
-		prefix+"wind_strength_kph",
+		sensorPrefix+"wind_strength_kph",
 		"Wind strength in kilometers per hour",
 		varLabels,
 		nil)
 
 	windDirectionDesc = prometheus.NewDesc(
-		prefix+"wind_direction_degrees",
+		sensorPrefix+"wind_direction_degrees",
 		"Wind direction in degrees",
 		varLabels,
 		nil)
 
 	rainDesc = prometheus.NewDesc(
-		prefix+"rain_amount_mm",
+		sensorPrefix+"rain_amount_mm",
 		"Rain amount in millimeters",
 		varLabels,
 		nil)
 
 	batteryDesc = prometheus.NewDesc(
-		prefix+"battery_percent",
+		sensorPrefix+"battery_percent",
 		"Battery remaining life (10: low)",
 		varLabels,
 		nil)
 	wifiDesc = prometheus.NewDesc(
-		prefix+"wifi_signal_strength",
+		sensorPrefix+"wifi_signal_strength",
 		"Wifi signal strength (86: bad, 71: avg, 56: good)",
 		varLabels,
 		nil)
 	rfDesc = prometheus.NewDesc(
-		prefix+"rf_signal_strength",
+		sensorPrefix+"rf_signal_strength",
 		"RF signal strength (90: lowest, 60: highest)",
 		varLabels,
 		nil)
@@ -110,12 +110,10 @@ func (c *netatmoCollector) Collect(mChan chan<- prometheus.Metric) {
 	if err != nil {
 		c.log.Errorf("Error getting data: %s", err)
 
-		netatmoUp.Set(0)
-		mChan <- netatmoUp
+		c.sendMetric(mChan, netatmoUpDesc, prometheus.GaugeValue, 0.0)
 		return
 	}
-	netatmoUp.Set(1)
-	mChan <- netatmoUp
+	c.sendMetric(mChan, netatmoUpDesc, prometheus.GaugeValue, 1.0)
 
 	for _, dev := range devices.Devices() {
 		stationName := dev.StationName
@@ -187,10 +185,11 @@ func (c *netatmoCollector) collectData(ch chan<- prometheus.Metric, device *neta
 	}
 }
 
-func (c *netatmoCollector) sendMetric(ch chan<- prometheus.Metric, desc *prometheus.Desc, valueType prometheus.ValueType, value float64, moduleName string, stationName string) {
-	m, err := prometheus.NewConstMetric(desc, valueType, value, moduleName, stationName)
+func (c *netatmoCollector) sendMetric(ch chan<- prometheus.Metric, desc *prometheus.Desc, valueType prometheus.ValueType, value float64, labelValues ...string) {
+	m, err := prometheus.NewConstMetric(desc, valueType, value, labelValues...)
 	if err != nil {
 		c.log.Errorf("Error creating %s metric: %s", updatedDesc.String(), err)
+		return
 	}
 	ch <- m
 }
