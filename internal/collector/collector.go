@@ -201,7 +201,7 @@ func (c *NetatmoCollector) collectData(ch chan<- prometheus.Metric, device *neta
 		return
 	}
 
-	c.sendMetric(ch, updatedDesc, prometheus.CounterValue, float64(date.UTC().Unix()), moduleName, stationName)
+	c.sendMetric(ch, updatedDesc, prometheus.GaugeValue, float64(date.UTC().Unix()), moduleName, stationName)
 
 	if data.Temperature != nil {
 		c.sendMetric(ch, tempDesc, prometheus.GaugeValue, float64(*data.Temperature), moduleName, stationName)
