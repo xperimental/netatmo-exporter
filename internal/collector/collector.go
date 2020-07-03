@@ -126,6 +126,7 @@ type NetatmoCollector struct {
 	cachedData          *netatmo.DeviceCollection
 }
 
+// Describe implements prometheus.Collector
 func (c *NetatmoCollector) Describe(dChan chan<- *prometheus.Desc) {
 	dChan <- updatedDesc
 	dChan <- tempDesc
@@ -133,6 +134,7 @@ func (c *NetatmoCollector) Describe(dChan chan<- *prometheus.Desc) {
 	dChan <- cotwoDesc
 }
 
+// Collect implements prometheus.Collector
 func (c *NetatmoCollector) Collect(mChan chan<- prometheus.Metric) {
 	now := time.Now()
 	if now.Sub(c.lastRefresh) >= c.RefreshInterval {

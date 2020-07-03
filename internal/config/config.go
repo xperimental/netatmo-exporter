@@ -30,7 +30,7 @@ const (
 	flagNetatmoPassword     = "password"
 
 	defaultRefreshInterval = 8 * time.Minute
-	defaultStaleDuration   = 30 * time.Minute
+	defaultStaleDuration   = 60 * time.Minute
 )
 
 var (
