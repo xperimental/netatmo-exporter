@@ -4,6 +4,18 @@ This changelog contains the changes made between releases. The versioning follow
 
 ## Unreleased
 
+## 1.3.0 (2020-08-09)
+
+### Added
+
+- HTTP Handler for getting build information `/version`
+- In-memory cache for data retrieved from NetAtmo API, configurable timeouts
+
+### Changed
+
+- Logger uses leveled logging, added option to set log level
+- Updated Go runtime and dependencies
+
 ## 1.2.0 (2018-10-27)
 
 ### Added
