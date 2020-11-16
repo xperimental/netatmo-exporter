@@ -176,9 +176,9 @@ func (c *NetatmoCollector) RefreshData(now time.Time) {
 	}(time.Now())
 
 	devices, err := c.Client.Read()
+	c.lastRefreshError = err
 	if err != nil {
 		c.Log.Errorf("Error during refresh: %s", err)
-		c.lastRefreshError = err
 		return
 	}
 
