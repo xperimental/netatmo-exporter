@@ -40,7 +40,7 @@ func main() {
 
 	metrics := &collector.NetatmoCollector{
 		Log:             log,
-		Client:          client,
+		ReadFunction:    client.Read,
 		RefreshInterval: cfg.RefreshInterval,
 		StaleThreshold:  cfg.StaleDuration,
 	}

@@ -112,12 +112,15 @@ var (
 		nil)
 )
 
+// ReadFunction defines the interface for reading from the Netatmo API.
+type ReadFunction func() (*netatmo.DeviceCollection, error)
+
 // NetatmoCollector is a Prometheus collector for Netatmo sensor values.
 type NetatmoCollector struct {
 	Log                 logrus.FieldLogger
 	RefreshInterval     time.Duration
 	StaleThreshold      time.Duration
-	Client              *netatmo.Client
+	ReadFunction        ReadFunction
 	lastRefresh         time.Time
 	lastRefreshError    error
 	lastRefreshDuration time.Duration
@@ -175,10 +178,10 @@ func (c *NetatmoCollector) RefreshData(now time.Time) {
 		c.lastRefreshDuration = time.Since(start)
 	}(time.Now())
 
-	devices, err := c.Client.Read()
+	devices, err := c.ReadFunction()
+	c.lastRefreshError = err
 	if err != nil {
 		c.Log.Errorf("Error during refresh: %s", err)
-		c.lastRefreshError = err
 		return
 	}
 
