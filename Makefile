@@ -1,4 +1,4 @@
-.PHONY: all test build-binary install clean
+.PHONY: all test build-binary image clean
 
 GO ?= go
 GO_OS ?= linux
@@ -15,6 +15,9 @@ test:
 
 build-binary:
 	GOOS=$(GO_OS) GOARCH=$(GO_ARCH) $(GO_CMD) build -tags netgo -ldflags "-w -X main.Version=$(VERSION) -X main.GitCommit=$(GIT_COMMIT)" -o netatmo-exporter .
+
+image:
+	docker build -t "xperimental/netatmo-exporter:$(VERSION)" .
 
 clean:
 	rm -f netatmo-exporter
