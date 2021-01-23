@@ -1,4 +1,4 @@
-# netatmo-exporter [![Docker Build Status](https://img.shields.io/docker/build/xperimental/netatmo-exporter.svg?style=flat-square)](https://hub.docker.com/r/xperimental/netatmo-exporter/)
+# netatmo-exporter [![Docker Build Status](https://img.shields.io/docker/cloud/build/xperimental/netatmo-exporter.svg?style=flat-square)](https://hub.docker.com/r/xperimental/netatmo-exporter/)
 
 Simple [prometheus](https://prometheus.io) exporter for getting sensor values [NetAtmo](https://www.netatmo.com) sensors into prometheus.
 
