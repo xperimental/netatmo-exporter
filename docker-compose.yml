@@ -1,0 +1,14 @@
+version: '3'
+services:
+  netatmo:
+    container_name: netatmo
+    image: xperimental/netatmo-exporter:latest
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Zurich
+      - NETATMO_CLIENT_ID=wwwwwwww
+      - NETATMO_CLIENT_SECRET=xxxxxxxx
+      - NETATMO_CLIENT_USERNAME=yyyyyyyy
+      - NETATMO_CLIENT_PASSWORD=zzzzzzzz
+    ports:
+      - "9210:9210/tcp"
