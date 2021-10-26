@@ -4,6 +4,10 @@ This changelog contains the changes made between releases. The versioning follow
 
 ## Unreleased
 
+### Added
+
+- Debugging endpoint for looking at data read from NetAtmo API (`/debug/data`)
+
 ## [1.4.0] - 2022-04-02
 
 ### Changed

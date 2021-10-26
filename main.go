@@ -12,6 +12,7 @@ import (
 	"github.com/spf13/pflag"
 	"github.com/xperimental/netatmo-exporter/internal/collector"
 	"github.com/xperimental/netatmo-exporter/internal/config"
+	"github.com/xperimental/netatmo-exporter/internal/web"
 )
 
 var log = &logrus.Logger{
@@ -51,6 +52,10 @@ func main() {
 
 	// Trigger first refresh
 	metrics.RefreshData(time.Now())
+
+	if cfg.DebugHandlers {
+		http.Handle("/debug/data", web.DebugHandler(log, client.Read))
+	}
 
 	http.Handle("/metrics", promhttp.HandlerFor(prometheus.DefaultGatherer, promhttp.HandlerOpts{}))
 	http.Handle("/version", versionHandler(log))
