@@ -1,4 +1,4 @@
-.PHONY: all test build-binary image clean
+.PHONY: all test build-binary image all-images clean
 
 GO ?= go
 GO_OS ?= linux
@@ -7,6 +7,12 @@ GO_CMD := CGO_ENABLED=0 $(GO)
 GIT_VERSION := $(shell git describe --tags --dirty)
 VERSION := $(GIT_VERSION:v%=%)
 GIT_COMMIT := $(shell git rev-parse HEAD)
+GITHUB_REF ?= refs/heads/master
+DOCKER_TAG != if [ "$(GITHUB_REF)" = "refs/heads/master" ]; then \
+		echo "latest"; \
+	else \
+		echo "$(VERSION)"; \
+	fi
 
 all: test build-binary
 
@@ -18,6 +24,9 @@ build-binary:
 
 image:
 	docker build -t "xperimental/netatmo-exporter:$(VERSION)" .
+
+all-images:
+	docker buildx build -t "ghcr.io/xperimental/netatmo-exporter:$(DOCKER_TAG)" -t "xperimental/netatmo-exporter:$(DOCKER_TAG)" --platform linux/amd64,linux/arm64 --push .
 
 clean:
 	rm -f netatmo-exporter
