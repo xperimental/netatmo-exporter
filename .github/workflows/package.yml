@@ -3,6 +3,7 @@ on:
   push:
     branches:
     - master
+    - package-workflow
   release:
     types:
     - published
