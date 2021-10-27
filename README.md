@@ -6,7 +6,10 @@ Simple [prometheus](https://prometheus.io) exporter for getting sensor values [N
 
 ### Run docker container
 
-The exporter is available as a Docker image: [`xperimental/netatmo-exporter`](https://hub.docker.com/r/xperimental/netatmo-exporter/)
+The exporter is available as a Docker image both on DockerHub and GitHub:
+
+- [`xperimental/netatmo-exporter`](https://hub.docker.com/r/xperimental/netatmo-exporter/)
+- [`ghcr.io/xperimental/netatmo-exporter:1.3.0`](https://github.com/xperimental/netatmo-exporter/pkgs/container/netatmo-exporter)
 
 The `latest` tag is built from the current master, tags tagged since the Docker support was added are also available as a tag in Docker.
 
