@@ -1,6 +1,6 @@
 FROM golang:1.17.8-alpine AS builder
 
-RUN apk add --no-cache make git
+RUN apk add --no-cache make git bash
 
 WORKDIR /build
 

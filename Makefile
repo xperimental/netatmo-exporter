@@ -24,7 +24,7 @@ build-binary:
 
 .PHONY: image
 image:
-	docker build -t "xperimental/netatmo-exporter:$(DOCKER_TAG)" .
+	docker buildx build -t "xperimental/netatmo-exporter:$(DOCKER_TAG)" --load .
 
 .PHONY: all-images
 all-images:
