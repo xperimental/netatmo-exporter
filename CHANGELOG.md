@@ -4,6 +4,15 @@ This changelog contains the changes made between releases. The versioning follow
 
 ## Unreleased
 
+### Changed
+
+- Go 1.17
+
+### Fixed
+
+- lastRefreshError is not reset (#11)
+- Docker build for arm64
+
 ## 1.3.0 (2020-08-09)
 
 ### Added
