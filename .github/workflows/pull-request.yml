@@ -1,15 +1,16 @@
-name: Pull-Request
-
+name: Pull-request
 on:
   pull_request:
-    branches: [ master ]
-
+    branches:
+    - master
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
     - name: Setup Go
       uses: actions/setup-go@v2
       with:
