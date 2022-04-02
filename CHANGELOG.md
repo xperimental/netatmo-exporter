@@ -4,6 +4,8 @@ This changelog contains the changes made between releases. The versioning follow
 
 ## Unreleased
 
+## [1.4.0] - 2022-04-02
+
 ### Changed
 
 - Go 1.17
@@ -14,7 +16,7 @@ This changelog contains the changes made between releases. The versioning follow
 - lastRefreshError is not reset (#11)
 - Docker build for arm64
 
-## 1.3.0 (2020-08-09)
+## [1.3.0] - 2020-08-09
 
 ### Added
 
@@ -26,14 +28,14 @@ This changelog contains the changes made between releases. The versioning follow
 - Logger uses leveled logging, added option to set log level
 - Updated Go runtime and dependencies
 
-## 1.2.0 (2018-10-27)
+## [1.2.0] - 2018-10-27
 
 ### Added
 
 - Support for battery and RF-link status
 - Support for configuration via environment variables
 
-## 1.1.0 (2018-09-02)
+## [1.1.0] - 2018-09-02
 
 ### Added
 
@@ -43,12 +45,19 @@ This changelog contains the changes made between releases. The versioning follow
 
 - Metrics now also contain a label for the "station name"
 
-## 1.0.1 (2017-11-26)
+## [1.0.1] - 2017-11-26
 
 ### Fixed
 
 - Integrate fix of upstream library
 
-## 1.0.0 (2017-03-09)
+## [1.0.0] - 2017-03-09
 
 - Initial release
+
+[1.4.0]: https://github.com/xperimental/netatmo-exporter/releases/tag/v1.4.0
+[1.3.0]: https://github.com/xperimental/netatmo-exporter/releases/tag/v1.3.0
+[1.2.0]: https://github.com/xperimental/netatmo-exporter/releases/tag/v1.2.0
+[1.1.0]: https://github.com/xperimental/netatmo-exporter/releases/tag/v1.1.0
+[1.0.1]: https://github.com/xperimental/netatmo-exporter/releases/tag/v1.0.1
+[1.0.0]: https://github.com/xperimental/netatmo-exporter/releases/tag/v1.0.0
