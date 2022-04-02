@@ -21,7 +21,7 @@ build-binary:
 	$(GO_CMD) build -tags netgo -ldflags "-w -X main.Version=$(VERSION) -X main.GitCommit=$(GIT_COMMIT)" -o netatmo-exporter .
 
 image:
-	docker build -t "xperimental/netatmo-exporter:$(VERSION)" .
+	docker build -t "xperimental/netatmo-exporter:$(DOCKER_TAG)" .
 
 all-images:
 	docker buildx build -t "ghcr.io/xperimental/netatmo-exporter:$(DOCKER_TAG)" -t "xperimental/netatmo-exporter:$(DOCKER_TAG)" --platform linux/amd64,linux/arm64 --push .
