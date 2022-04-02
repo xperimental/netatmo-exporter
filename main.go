@@ -13,17 +13,15 @@ import (
 	"github.com/xperimental/netatmo-exporter/internal/config"
 )
 
-var (
-	log = &logrus.Logger{
-		Out: os.Stderr,
-		Formatter: &logrus.TextFormatter{
-			DisableTimestamp: true,
-		},
-		Level:        logrus.InfoLevel,
-		ExitFunc:     os.Exit,
-		ReportCaller: false,
-	}
-)
+var log = &logrus.Logger{
+	Out: os.Stderr,
+	Formatter: &logrus.TextFormatter{
+		DisableTimestamp: true,
+	},
+	Level:        logrus.InfoLevel,
+	ExitFunc:     os.Exit,
+	ReportCaller: false,
+}
 
 func main() {
 	cfg, err := config.Parse(os.Args, os.Getenv)

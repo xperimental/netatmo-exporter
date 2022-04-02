@@ -56,7 +56,7 @@ func (l *logLevel) Type() string {
 }
 
 func (l *logLevel) String() string {
-	return fmt.Sprintf("%s", logrus.Level(*l))
+	return logrus.Level(*l).String()
 }
 
 func (l *logLevel) Set(value string) error {
