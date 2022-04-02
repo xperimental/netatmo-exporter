@@ -9,26 +9,29 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/pflag"
 	"github.com/xperimental/netatmo-exporter/internal/collector"
 	"github.com/xperimental/netatmo-exporter/internal/config"
 )
 
-var (
-	log = &logrus.Logger{
-		Out: os.Stderr,
-		Formatter: &logrus.TextFormatter{
-			DisableTimestamp: true,
-		},
-		Level:        logrus.InfoLevel,
-		ExitFunc:     os.Exit,
-		ReportCaller: false,
-	}
-)
+var log = &logrus.Logger{
+	Out: os.Stderr,
+	Formatter: &logrus.TextFormatter{
+		DisableTimestamp: true,
+	},
+	Level:        logrus.InfoLevel,
+	ExitFunc:     os.Exit,
+	ReportCaller: false,
+}
 
 func main() {
 	cfg, err := config.Parse(os.Args, os.Getenv)
-	if err != nil {
+	switch {
+	case err == pflag.ErrHelp:
+		return
+	case err != nil:
 		log.Fatalf("Error in configuration: %s", err)
+	default:
 	}
 	log.SetLevel(logrus.Level(cfg.LogLevel))
 

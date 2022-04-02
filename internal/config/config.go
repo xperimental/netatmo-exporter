@@ -56,7 +56,7 @@ func (l *logLevel) Type() string {
 }
 
 func (l *logLevel) String() string {
-	return fmt.Sprintf("%s", logrus.Level(*l))
+	return logrus.Level(*l).String()
 }
 
 func (l *logLevel) Set(value string) error {
@@ -79,14 +79,14 @@ type Config struct {
 }
 
 // Parse takes the arguments and environment variables provided and creates the Config from that.
-func Parse(args []string, getenv func(string) string) (Config, error) {
+func Parse(args []string, getEnv func(string) string) (Config, error) {
 	cfg := defaultConfig
 
 	if len(args) < 1 {
 		return cfg, errNoBinaryName
 	}
 
-	flagSet := pflag.NewFlagSet(args[0], pflag.ExitOnError)
+	flagSet := pflag.NewFlagSet(args[0], pflag.ContinueOnError)
 	flagSet.StringVarP(&cfg.Addr, flagListenAddress, "a", cfg.Addr, "Address to listen on.")
 	flagSet.Var(&cfg.LogLevel, flagLogLevel, "Sets the minimum level output through logging.")
 	flagSet.DurationVar(&cfg.RefreshInterval, flagRefreshInterval, cfg.RefreshInterval, "Time interval used for internal caching of NetAtmo sensor data.")
@@ -95,9 +95,12 @@ func Parse(args []string, getenv func(string) string) (Config, error) {
 	flagSet.StringVarP(&cfg.Netatmo.ClientSecret, flagNetatmoClientSecret, "s", cfg.Netatmo.ClientSecret, "Client secret for NetAtmo app.")
 	flagSet.StringVarP(&cfg.Netatmo.Username, flagNetatmoUsername, "u", cfg.Netatmo.Username, "Username of NetAtmo account.")
 	flagSet.StringVarP(&cfg.Netatmo.Password, flagNetatmoPassword, "p", cfg.Netatmo.Password, "Password of NetAtmo account.")
-	flagSet.Parse(args[1:])
 
-	if err := applyEnvironment(&cfg, getenv); err != nil {
+	if err := flagSet.Parse(args[1:]); err != nil {
+		return Config{}, err
+	}
+
+	if err := applyEnvironment(&cfg, getEnv); err != nil {
 		return Config{}, fmt.Errorf("error in environment: %s", err)
 	}
 

@@ -18,6 +18,10 @@ all: test build-binary
 test:
 	$(GO_CMD) test -cover ./...
 
+.PHONY: lint
+lint:
+	golangci-lint run --fix
+
 .PHONY: build-binary
 build-binary:
 	$(GO_CMD) build -tags netgo -ldflags "-w -X main.Version=$(VERSION) -X main.GitCommit=$(GIT_COMMIT)" -o netatmo-exporter .
