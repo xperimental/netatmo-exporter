@@ -10,6 +10,7 @@ This changelog contains the changes made between releases. The versioning follow
 
 ### Fixed
 
+- Updated Prometheus client library for CVE-2022-21698
 - lastRefreshError is not reset (#11)
 - Docker build for arm64
 
