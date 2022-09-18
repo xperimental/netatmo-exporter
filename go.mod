@@ -1,6 +1,6 @@
 module github.com/xperimental/netatmo-exporter
 
-go 1.17
+go 1.19
 
 require (
 	github.com/exzz/netatmo-api-go v0.0.0-20201009073308-a8620474d1ea
