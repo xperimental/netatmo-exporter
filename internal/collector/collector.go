@@ -161,7 +161,7 @@ func (c *NetatmoCollector) Collect(mChan chan<- prometheus.Metric) {
 	if c.cachedData != nil {
 		for _, dev := range c.cachedData.Devices() {
 			homeName := dev.HomeName
-			stationName := dev.StationName
+			stationName := dev.StationName //nolint: staticcheck
 			c.collectData(mChan, dev, stationName, homeName)
 
 			for _, module := range dev.LinkedModules {
