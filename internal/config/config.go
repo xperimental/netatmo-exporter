@@ -12,6 +12,7 @@ import (
 
 const (
 	envVarListenAddress       = "NETATMO_EXPORTER_ADDR"
+	envVarDebugHandlers       = "DEBUG_HANDLERS"
 	envVarLogLevel            = "NETATMO_LOG_LEVEL"
 	envVarRefreshInterval     = "NETATMO_REFRESH_INTERVAL"
 	envVarStaleDuration       = "NETATMO_AGE_STALE"
@@ -21,6 +22,7 @@ const (
 	envVarNetatmoPassword     = "NETATMO_CLIENT_PASSWORD"
 
 	flagListenAddress       = "addr"
+	flagDebugHandlers       = "debug-handlers"
 	flagLogLevel            = "log-level"
 	flagRefreshInterval     = "refresh-interval"
 	flagStaleDuration       = "age-stale"
@@ -72,6 +74,7 @@ func (l *logLevel) Set(value string) error {
 // Config contains the configuration options.
 type Config struct {
 	Addr            string
+	DebugHandlers   bool
 	LogLevel        logLevel
 	RefreshInterval time.Duration
 	StaleDuration   time.Duration
@@ -88,6 +91,7 @@ func Parse(args []string, getEnv func(string) string) (Config, error) {
 
 	flagSet := pflag.NewFlagSet(args[0], pflag.ContinueOnError)
 	flagSet.StringVarP(&cfg.Addr, flagListenAddress, "a", cfg.Addr, "Address to listen on.")
+	flagSet.BoolVar(&cfg.DebugHandlers, flagDebugHandlers, cfg.DebugHandlers, "Enables debugging HTTP handlers.")
 	flagSet.Var(&cfg.LogLevel, flagLogLevel, "Sets the minimum level output through logging.")
 	flagSet.DurationVar(&cfg.RefreshInterval, flagRefreshInterval, cfg.RefreshInterval, "Time interval used for internal caching of NetAtmo sensor data.")
 	flagSet.DurationVar(&cfg.StaleDuration, flagStaleDuration, cfg.StaleDuration, "Data age to consider as stale. Stale data does not create metrics anymore.")
@@ -134,6 +138,10 @@ func Parse(args []string, getEnv func(string) string) (Config, error) {
 func applyEnvironment(cfg *Config, getenv func(string) string) error {
 	if envAddr := getenv(envVarListenAddress); envAddr != "" {
 		cfg.Addr = envAddr
+	}
+
+	if envDebugHandlers := getenv(envVarDebugHandlers); envDebugHandlers != "" {
+		cfg.DebugHandlers = true
 	}
 
 	if envLogLevel := getenv(envVarLogLevel); envLogLevel != "" {
