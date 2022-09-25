@@ -7,6 +7,11 @@ This changelog contains the changes made between releases. The versioning follow
 ### Added
 
 - Debugging endpoint for looking at data read from NetAtmo API (`/debug/data`)
+- New `home` label as additional identification for sensors
+
+### Changed
+
+- Switch to fork of netatmo-api-go library
 
 ## [1.4.0] - 2022-04-02
 
