@@ -29,7 +29,7 @@ func TestDebugHandler(t *testing.T) {
 				return createCollection([]*netatmo.Device{}), nil
 			},
 			wantStatus: http.StatusOK,
-			wantBody:   `{"Body":{"devices":[]}}
+			wantBody: `{"Body":{"devices":[]}}
 `,
 		},
 		{
@@ -38,7 +38,7 @@ func TestDebugHandler(t *testing.T) {
 				return nil, errors.New("test error")
 			},
 			wantStatus: http.StatusBadGateway,
-			wantBody:   `Error retrieving data: test error
+			wantBody: `Error retrieving data: test error
 `,
 		},
 	}
