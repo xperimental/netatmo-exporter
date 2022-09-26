@@ -19,7 +19,14 @@ lint:
 	golangci-lint run --fix
 
 .PHONY: build-binary
-build-binary:
+build-binary: auth-tool netatmo-exporter
+
+.PHONY: auth-tool
+auth-tool:
+	$(GO_CMD) build -tags netgo -ldflags "-w -X main.Version=$(VERSION) -X main.GitCommit=$(GIT_COMMIT)" -o auth-tool ./cmd/auth-tool
+
+.PHONY: netatmo-exporter
+netatmo-exporter:
 	$(GO_CMD) build -tags netgo -ldflags "-w -X main.Version=$(VERSION) -X main.GitCommit=$(GIT_COMMIT)" -o netatmo-exporter .
 
 .PHONY: image
