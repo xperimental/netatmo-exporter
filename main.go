@@ -89,7 +89,7 @@ func loadToken(fileName string) (*oauth2.Token, error) {
 }
 
 func registerSignalHandler(client *netatmo.Client, fileName string) {
-	ch := make(chan os.Signal)
+	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, signals...)
 	go func() {
 		sig := <-ch
@@ -115,7 +115,7 @@ func saveToken(client *netatmo.Client, fileName string) error {
 		return fmt.Errorf("error marshalling token: %w", err)
 	}
 
-	if err := os.WriteFile(fileName, data, 0600); err != nil {
+	if err := os.WriteFile(fileName, data, 0o600); err != nil {
 		return fmt.Errorf("error writing token file: %w", err)
 	}
 
