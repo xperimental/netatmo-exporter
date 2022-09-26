@@ -16,6 +16,7 @@ import (
 	"github.com/spf13/pflag"
 	"github.com/xperimental/netatmo-exporter/internal/collector"
 	"github.com/xperimental/netatmo-exporter/internal/config"
+	"github.com/xperimental/netatmo-exporter/internal/logger"
 	"github.com/xperimental/netatmo-exporter/internal/web"
 	"golang.org/x/oauth2"
 )
@@ -26,15 +27,7 @@ var (
 		syscall.SIGTERM,
 	}
 
-	log = &logrus.Logger{
-		Out: os.Stderr,
-		Formatter: &logrus.TextFormatter{
-			DisableTimestamp: true,
-		},
-		Level:        logrus.InfoLevel,
-		ExitFunc:     os.Exit,
-		ReportCaller: false,
-	}
+	log = logger.NewLogger()
 )
 
 func main() {
