@@ -1,0 +1,75 @@
+<html lang="en">
+<head>
+  <title>netatmo-exporter - Authentication Companion</title>
+  <style>
+    input {
+      min-width: 400pt;
+    }
+
+    .mono {
+      display: inline;
+      font-family: monospace;
+    }
+
+    .token-box {
+      border: 1px solid black;
+      padding: 5px;
+    }
+
+    .token-table {
+      display: table;
+    }
+
+    .token-table-row {
+      display: table-row;
+    }
+
+    .token-table-cell {
+      display: table-cell;
+    }
+  </style>
+</head>
+<body>
+<h1>netatmo-exporter</h1>
+<h3>Authentication Companion</h3>
+<div>Use this tool to create a
+  <div class="mono">token.json</div>
+  that can be used by
+  <div class="mono">netatmo-exporter</div>
+  to authenticate
+  with the NetAtmo API in your name.
+</div>
+{{ with .Token }}
+  <div class="token-box">
+    Your token data:
+    <div class="token-table">
+      <div class="token-table-row">
+        <div class="token-table-cell"><label for="access_token">Access Token:</label></div>
+        <div class="token-table-cell"><input type="text" id="access_token"
+                                             value="{{ .AccessToken }}"
+                                             readonly></div>
+      </div>
+      <div class="token-table-row">
+        <div class="token-table-cell"><label for="refresh_token">Refresh Token:</label></div>
+        <div class="token-table-cell"><input type="text" id="refresh_token"
+                                             value="{{ .RefreshToken }}" readonly></div>
+      </div>
+      <div class="token-table-row">
+        <div class="token-table-cell"><label for="expiry">Expires:</label></div>
+        <div class="token-table-cell"><input type="text" id="expiry" value="{{ .Expiry }}" readonly></div>
+      </div>
+    </div>
+  </div>
+  <div>
+    You can also <a href="/token">download the token as JSON</a>.
+  </div>
+  <div>Note: You do not have to reauthorize with this tool at the time listed under "Expiry". If the token is loaded
+    into a running netatmo-exporter, it will extend its expiry time by refreshing it using the API.
+  </div>
+{{ else }}
+  <div>
+    First authorize with the NetAtmo API: <a href="/authorize">Authorize</a>
+  </div>
+{{ end }}
+</body>
+</html>
