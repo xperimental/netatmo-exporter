@@ -3,7 +3,6 @@ package main
 import (
 	"net/http"
 	"os"
-	"time"
 
 	netatmo "github.com/exzz/netatmo-api-go"
 	"github.com/prometheus/client_golang/prometheus"
@@ -36,11 +35,7 @@ func main() {
 	}
 	log.SetLevel(logrus.Level(cfg.LogLevel))
 
-	log.Infof("Login as %s", cfg.Netatmo.Username)
-	client, err := netatmo.NewClient(cfg.Netatmo)
-	if err != nil {
-		log.Fatalf("Error creating client: %s", err)
-	}
+	client := netatmo.NewClient(cfg.Netatmo)
 
 	metrics := &collector.NetatmoCollector{
 		Log:             log,
@@ -50,13 +45,12 @@ func main() {
 	}
 	prometheus.MustRegister(metrics)
 
-	// Trigger first refresh
-	metrics.RefreshData(time.Now())
-
 	if cfg.DebugHandlers {
 		http.Handle("/debug/data", web.DebugHandler(log, client.Read))
 	}
 
+	http.Handle("/authorize", web.AuthorizeHandler("http://localhost:9210", client))
+	http.Handle("/callback", web.CallbackHandler(client))
 	http.Handle("/metrics", promhttp.HandlerFor(prometheus.DefaultGatherer, promhttp.HandlerOpts{}))
 	http.Handle("/version", versionHandler(log))
 	http.Handle("/", http.RedirectHandler("/metrics", http.StatusFound))
