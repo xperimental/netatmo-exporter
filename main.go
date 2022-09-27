@@ -49,7 +49,7 @@ func main() {
 		http.Handle("/debug/data", web.DebugHandler(log, client.Read))
 	}
 
-	http.Handle("/authorize", web.AuthorizeHandler("http://localhost:9210", client))
+	http.Handle("/authorize", web.AuthorizeHandler(cfg.ExternalURL, client))
 	http.Handle("/callback", web.CallbackHandler(client))
 	http.Handle("/metrics", promhttp.HandlerFor(prometheus.DefaultGatherer, promhttp.HandlerOpts{}))
 	http.Handle("/version", versionHandler(log))
