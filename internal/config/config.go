@@ -3,25 +3,28 @@ package config
 import (
 	"errors"
 	"fmt"
+	"net"
 	"time"
 
-	netatmo "github.com/exzz/netatmo-api-go"
+	"github.com/exzz/netatmo-api-go"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
 )
 
 const (
 	envVarListenAddress       = "NETATMO_EXPORTER_ADDR"
+	envVarExternalURL         = "NETATMO_EXPORTER_EXTERNAL_URL"
+	envVarTokenFile           = "NETATMO_EXPORTER_TOKEN_FILE"
 	envVarDebugHandlers       = "DEBUG_HANDLERS"
 	envVarLogLevel            = "NETATMO_LOG_LEVEL"
 	envVarRefreshInterval     = "NETATMO_REFRESH_INTERVAL"
 	envVarStaleDuration       = "NETATMO_AGE_STALE"
 	envVarNetatmoClientID     = "NETATMO_CLIENT_ID"
 	envVarNetatmoClientSecret = "NETATMO_CLIENT_SECRET"
-	envVarNetatmoUsername     = "NETATMO_CLIENT_USERNAME"
-	envVarNetatmoPassword     = "NETATMO_CLIENT_PASSWORD"
 
 	flagListenAddress       = "addr"
+	flagExternalURL         = "external-url"
+	flagTokenFile           = "token-file"
 	flagDebugHandlers       = "debug-handlers"
 	flagLogLevel            = "log-level"
 	flagRefreshInterval     = "refresh-interval"
@@ -47,8 +50,6 @@ var (
 	errNoListenAddress       = errors.New("no listen address")
 	errNoNetatmoClientID     = errors.New("need a NetAtmo client ID")
 	errNoNetatmoClientSecret = errors.New("need a NetAtmo client secret")
-	errNoNetatmoUsername     = errors.New("username can not be blank")
-	errNoNetatmoPassword     = errors.New("password can not be blank")
 )
 
 type logLevel logrus.Level
@@ -74,6 +75,8 @@ func (l *logLevel) Set(value string) error {
 // Config contains the configuration options.
 type Config struct {
 	Addr            string
+	ExternalURL     string
+	TokenFile       string
 	DebugHandlers   bool
 	LogLevel        logLevel
 	RefreshInterval time.Duration
@@ -91,14 +94,14 @@ func Parse(args []string, getEnv func(string) string) (Config, error) {
 
 	flagSet := pflag.NewFlagSet(args[0], pflag.ContinueOnError)
 	flagSet.StringVarP(&cfg.Addr, flagListenAddress, "a", cfg.Addr, "Address to listen on.")
+	flagSet.StringVar(&cfg.ExternalURL, flagExternalURL, cfg.ExternalURL, "External URL to use as base for OAuth redirect URL.")
+	flagSet.StringVar(&cfg.TokenFile, flagTokenFile, cfg.TokenFile, "Path to token file for loading/persisting authentication token.")
 	flagSet.BoolVar(&cfg.DebugHandlers, flagDebugHandlers, cfg.DebugHandlers, "Enables debugging HTTP handlers.")
 	flagSet.Var(&cfg.LogLevel, flagLogLevel, "Sets the minimum level output through logging.")
 	flagSet.DurationVar(&cfg.RefreshInterval, flagRefreshInterval, cfg.RefreshInterval, "Time interval used for internal caching of NetAtmo sensor data.")
 	flagSet.DurationVar(&cfg.StaleDuration, flagStaleDuration, cfg.StaleDuration, "Data age to consider as stale. Stale data does not create metrics anymore.")
 	flagSet.StringVarP(&cfg.Netatmo.ClientID, flagNetatmoClientID, "i", cfg.Netatmo.ClientID, "Client ID for NetAtmo app.")
 	flagSet.StringVarP(&cfg.Netatmo.ClientSecret, flagNetatmoClientSecret, "s", cfg.Netatmo.ClientSecret, "Client secret for NetAtmo app.")
-	flagSet.StringVarP(&cfg.Netatmo.Username, flagNetatmoUsername, "u", cfg.Netatmo.Username, "Username of NetAtmo account.")
-	flagSet.StringVarP(&cfg.Netatmo.Password, flagNetatmoPassword, "p", cfg.Netatmo.Password, "Password of NetAtmo account.")
 
 	if err := flagSet.Parse(args[1:]); err != nil {
 		return Config{}, err
@@ -112,20 +115,25 @@ func Parse(args []string, getEnv func(string) string) (Config, error) {
 		return Config{}, errNoListenAddress
 	}
 
+	if cfg.ExternalURL == "" {
+		host, port, err := net.SplitHostPort(cfg.Addr)
+		if err != nil {
+			return Config{}, fmt.Errorf("error generating external URL from listen address: %w", err)
+		}
+
+		if host == "" {
+			host = "127.0.0.1"
+		}
+
+		cfg.ExternalURL = fmt.Sprintf("http://%s:%s", host, port)
+	}
+
 	if len(cfg.Netatmo.ClientID) == 0 {
 		return Config{}, errNoNetatmoClientID
 	}
 
 	if len(cfg.Netatmo.ClientSecret) == 0 {
 		return Config{}, errNoNetatmoClientSecret
-	}
-
-	if len(cfg.Netatmo.Username) == 0 {
-		return Config{}, errNoNetatmoUsername
-	}
-
-	if len(cfg.Netatmo.Password) == 0 {
-		return Config{}, errNoNetatmoPassword
 	}
 
 	if cfg.StaleDuration < cfg.RefreshInterval {
@@ -138,6 +146,14 @@ func Parse(args []string, getEnv func(string) string) (Config, error) {
 func applyEnvironment(cfg *Config, getenv func(string) string) error {
 	if envAddr := getenv(envVarListenAddress); envAddr != "" {
 		cfg.Addr = envAddr
+	}
+
+	if externalURL := getenv(envVarExternalURL); externalURL != "" {
+		cfg.ExternalURL = externalURL
+	}
+
+	if tokenFile := getenv(envVarTokenFile); tokenFile != "" {
+		cfg.TokenFile = tokenFile
 	}
 
 	if envDebugHandlers := getenv(envVarDebugHandlers); envDebugHandlers != "" {
@@ -174,14 +190,6 @@ func applyEnvironment(cfg *Config, getenv func(string) string) error {
 
 	if envClientSecret := getenv(envVarNetatmoClientSecret); envClientSecret != "" {
 		cfg.Netatmo.ClientSecret = envClientSecret
-	}
-
-	if envUsername := getenv(envVarNetatmoUsername); envUsername != "" {
-		cfg.Netatmo.Username = envUsername
-	}
-
-	if envPassword := getenv(envVarNetatmoPassword); envPassword != "" {
-		cfg.Netatmo.Password = envPassword
 	}
 
 	return nil
