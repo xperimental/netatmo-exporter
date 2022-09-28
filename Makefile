@@ -32,7 +32,7 @@ image:
 
 .PHONY: all-images
 all-images:
-	docker buildx build -t "ghcr.io/xperimental/netatmo-exporter:$(DOCKER_TAG)" -t "xperimental/netatmo-exporter:$(DOCKER_TAG)" --platform linux/amd64,linux/arm64 --push .
+	docker buildx build -t "ghcr.io/xperimental/netatmo-exporter:$(DOCKER_TAG)" --platform linux/amd64,linux/arm64 --push .
 
 .PHONY: clean
 clean:
