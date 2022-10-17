@@ -128,12 +128,14 @@ func Parse(args []string, getEnv func(string) string) (Config, error) {
 		cfg.ExternalURL = fmt.Sprintf("http://%s:%s", host, port)
 	}
 
-	if len(cfg.Netatmo.ClientID) == 0 {
-		return Config{}, errNoNetatmoClientID
-	}
+	if cfg.TokenFile == "" {
+		if len(cfg.Netatmo.ClientID) == 0 {
+			return Config{}, errNoNetatmoClientID
+		}
 
-	if len(cfg.Netatmo.ClientSecret) == 0 {
-		return Config{}, errNoNetatmoClientSecret
+		if len(cfg.Netatmo.ClientSecret) == 0 {
+			return Config{}, errNoNetatmoClientSecret
+		}
 	}
 
 	if cfg.StaleDuration < cfg.RefreshInterval {

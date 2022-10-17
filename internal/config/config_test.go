@@ -1,11 +1,11 @@
 package config
 
 import (
-	"reflect"
 	"testing"
 	"time"
 
 	netatmo "github.com/exzz/netatmo-api-go"
+	"github.com/google/go-cmp/cmp"
 	"github.com/sirupsen/logrus"
 )
 
@@ -131,6 +131,21 @@ func TestParseConfig(t *testing.T) {
 			},
 			wantErr: errNoNetatmoClientSecret,
 		},
+		{
+			name: "token file makes client-id and secret not required",
+			args: []string{
+				"test-cmd",
+				"--token-file=/tmp/token.json",
+			},
+			wantConfig: Config{
+				Addr:            defaultConfig.Addr,
+				ExternalURL:     "http://127.0.0.1:9210",
+				LogLevel:        logLevel(logrus.InfoLevel),
+				RefreshInterval: defaultRefreshInterval,
+				StaleDuration:   defaultStaleDuration,
+				TokenFile:       "/tmp/token.json",
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -153,8 +168,8 @@ func TestParseConfig(t *testing.T) {
 				return
 			}
 
-			if !reflect.DeepEqual(config, tt.wantConfig) {
-				t.Errorf("got config %v, want %v", config, tt.wantConfig)
+			if diff := cmp.Diff(config, tt.wantConfig); diff != "" {
+				t.Errorf("actual config differs from expected: %s", diff)
 			}
 		})
 	}
