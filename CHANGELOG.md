@@ -8,6 +8,7 @@ This changelog contains the changes made between releases. The versioning follow
 
 - Debugging endpoint for looking at data read from NetAtmo API (`/debug/data`)
 - New `home` label as additional identification for sensors
+- Use Module's ID (currently MAC-address) as fallback for the `name` label if no name is provided
 
 ### Changed
 
