@@ -42,12 +42,7 @@ func main() {
 		log.Fatalf("Error creating client: %s", err)
 	}
 
-	metrics := &collector.NetatmoCollector{
-		Log:             log,
-		ReadFunction:    client.Read,
-		RefreshInterval: cfg.RefreshInterval,
-		StaleThreshold:  cfg.StaleDuration,
-	}
+	metrics := collector.New(log, client.Read, cfg.RefreshInterval, cfg.StaleDuration)
 	prometheus.MustRegister(metrics)
 
 	// Trigger first refresh
