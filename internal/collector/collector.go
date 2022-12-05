@@ -118,10 +118,12 @@ type ReadFunction func() (*netatmo.DeviceCollection, error)
 
 // NetatmoCollector is a Prometheus collector for Netatmo sensor values.
 type NetatmoCollector struct {
-	Log                 logrus.FieldLogger
-	RefreshInterval     time.Duration
-	StaleThreshold      time.Duration
-	ReadFunction        ReadFunction
+	Log             logrus.FieldLogger
+	RefreshInterval time.Duration
+	StaleThreshold  time.Duration
+	ReadFunction    ReadFunction
+	clock           func() time.Time
+
 	lastRefresh         time.Time
 	lastRefreshError    error
 	lastRefreshDuration time.Duration
@@ -130,17 +132,40 @@ type NetatmoCollector struct {
 	cachedData          *netatmo.DeviceCollection
 }
 
+func New(log *logrus.Logger, readFunction ReadFunction, refreshInterval, staleDuration time.Duration) *NetatmoCollector {
+	return &NetatmoCollector{
+		Log:             log,
+		RefreshInterval: refreshInterval,
+		StaleThreshold:  staleDuration,
+		ReadFunction:    readFunction,
+		clock:           time.Now,
+	}
+}
+
 // Describe implements prometheus.Collector
 func (c *NetatmoCollector) Describe(dChan chan<- *prometheus.Desc) {
+	dChan <- netatmoUpDesc
+	dChan <- refreshIntervalDesc
+	dChan <- refreshTimestampDesc
+	dChan <- refreshDurationDesc
+	dChan <- cacheTimestampDesc
 	dChan <- updatedDesc
 	dChan <- tempDesc
 	dChan <- humidityDesc
 	dChan <- cotwoDesc
+	dChan <- noiseDesc
+	dChan <- pressureDesc
+	dChan <- windStrengthDesc
+	dChan <- windDirectionDesc
+	dChan <- rainDesc
+	dChan <- batteryDesc
+	dChan <- wifiDesc
+	dChan <- rfDesc
 }
 
 // Collect implements prometheus.Collector
 func (c *NetatmoCollector) Collect(mChan chan<- prometheus.Metric) {
-	now := time.Now()
+	now := c.clock()
 	if now.Sub(c.lastRefresh) >= c.RefreshInterval {
 		go c.RefreshData(now)
 	}
@@ -177,8 +202,8 @@ func (c *NetatmoCollector) RefreshData(now time.Time) {
 	c.lastRefresh = now
 
 	defer func(start time.Time) {
-		c.lastRefreshDuration = time.Since(start)
-	}(time.Now())
+		c.lastRefreshDuration = c.clock().Sub(start)
+	}(c.clock())
 
 	devices, err := c.ReadFunction()
 	c.lastRefreshError = err
@@ -203,8 +228,9 @@ func (c *NetatmoCollector) collectData(ch chan<- prometheus.Metric, device *neta
 	}
 
 	date := time.Unix(*data.LastMeasure, 0)
-	if time.Since(date) > c.StaleThreshold {
-		c.Log.Debugf("Data is stale for %s: %s > %s", moduleName, time.Since(date), c.StaleThreshold)
+	dataAge := c.clock().Sub(date)
+	if dataAge > c.StaleThreshold {
+		c.Log.Debugf("Data is stale for %s: %s > %s", moduleName, dataAge, c.StaleThreshold)
 		return
 	}
 

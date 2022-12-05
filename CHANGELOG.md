@@ -13,6 +13,10 @@ This changelog contains the changes made between releases. The versioning follow
 
 - Switch to fork of netatmo-api-go library
 
+### Fixed
+
+- Not all metric descriptors sent to registry
+
 ## [1.4.0] - 2022-04-02
 
 ### Changed
