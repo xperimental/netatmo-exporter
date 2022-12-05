@@ -1,4 +1,4 @@
-# netatmo-exporter [![Docker Build Status](https://img.shields.io/docker/cloud/build/xperimental/netatmo-exporter.svg?style=flat-square)](https://hub.docker.com/r/xperimental/netatmo-exporter/)
+# netatmo-exporter
 
 Simple [prometheus](https://prometheus.io) exporter for getting sensor values [NetAtmo](https://www.netatmo.com) sensors into prometheus.
 
@@ -8,8 +8,8 @@ Simple [prometheus](https://prometheus.io) exporter for getting sensor values [N
 
 The exporter is available as a Docker image both on DockerHub and GitHub:
 
-- [`xperimental/netatmo-exporter`](https://hub.docker.com/r/xperimental/netatmo-exporter/)
 - [`ghcr.io/xperimental/netatmo-exporter`](https://github.com/xperimental/netatmo-exporter/pkgs/container/netatmo-exporter)
+- [`xperimental/netatmo-exporter`](https://hub.docker.com/r/xperimental/netatmo-exporter/)
 
 In addition to the `latest` tag which points to the version currently in the `master` branch, tagged versions are also available.
 
