@@ -146,6 +146,18 @@ func TestNetatmoCollector_Collect(t *testing.T) {
 						LastMeasure: int64Ptr(3502),
 					},
 				},
+				{
+					ID:             "aa:bb:cc:dd:ee:f3",
+					BatteryPercent: int32Ptr(60),
+					RFStatus:       int32Ptr(70),
+					Type:           "NAModule4",
+					DashboardData: netatmo.DashboardData{
+						Temperature: float32Ptr(23),
+						Humidity:    int32Ptr(75),
+						CO2:         int32Ptr(750),
+						LastMeasure: int64Ptr(3503),
+					},
+				},
 			},
 		},
 	}
@@ -194,15 +206,18 @@ netatmo_refresh_interval_seconds 3600
 # TYPE netatmo_sensor_battery_percent gauge
 netatmo_sensor_battery_percent{home="Home",module="Bedroom",station="Home (Living Room)"} 55
 netatmo_sensor_battery_percent{home="Home",module="Outside",station="Home (Living Room)"} 70
+netatmo_sensor_battery_percent{home="Home",module="id-aa:bb:cc:dd:ee:f3",station="Home (Living Room)"} 60
 # HELP netatmo_sensor_co2_ppm Carbondioxide measurement in parts per million
 # TYPE netatmo_sensor_co2_ppm gauge
 netatmo_sensor_co2_ppm{home="Home",module="Bedroom",station="Home (Living Room)"} 510
 netatmo_sensor_co2_ppm{home="Home",module="Living Room",station="Home (Living Room)"} 650
+netatmo_sensor_co2_ppm{home="Home",module="id-aa:bb:cc:dd:ee:f3",station="Home (Living Room)"} 750
 # HELP netatmo_sensor_humidity_percent Relative humidity measurement in percent
 # TYPE netatmo_sensor_humidity_percent gauge
 netatmo_sensor_humidity_percent{home="Home",module="Bedroom",station="Home (Living Room)"} 52
 netatmo_sensor_humidity_percent{home="Home",module="Living Room",station="Home (Living Room)"} 45
 netatmo_sensor_humidity_percent{home="Home",module="Outside",station="Home (Living Room)"} 83
+netatmo_sensor_humidity_percent{home="Home",module="id-aa:bb:cc:dd:ee:f3",station="Home (Living Room)"} 75
 # HELP netatmo_sensor_noise_db Noise measurement in decibels
 # TYPE netatmo_sensor_noise_db gauge
 netatmo_sensor_noise_db{home="Home",module="Living Room",station="Home (Living Room)"} 40
@@ -213,16 +228,19 @@ netatmo_sensor_pressure_mb{home="Home",module="Living Room",station="Home (Livin
 # TYPE netatmo_sensor_rf_signal_strength gauge
 netatmo_sensor_rf_signal_strength{home="Home",module="Bedroom",station="Home (Living Room)"} 80
 netatmo_sensor_rf_signal_strength{home="Home",module="Outside",station="Home (Living Room)"} 57
+netatmo_sensor_rf_signal_strength{home="Home",module="id-aa:bb:cc:dd:ee:f3",station="Home (Living Room)"} 70
 # HELP netatmo_sensor_temperature_celsius Temperature measurement in celsius
 # TYPE netatmo_sensor_temperature_celsius gauge
 netatmo_sensor_temperature_celsius{home="Home",module="Bedroom",station="Home (Living Room)"} 17
 netatmo_sensor_temperature_celsius{home="Home",module="Living Room",station="Home (Living Room)"} 23
 netatmo_sensor_temperature_celsius{home="Home",module="Outside",station="Home (Living Room)"} 5
+netatmo_sensor_temperature_celsius{home="Home",module="id-aa:bb:cc:dd:ee:f3",station="Home (Living Room)"} 23
 # HELP netatmo_sensor_updated Timestamp of last update
 # TYPE netatmo_sensor_updated gauge
 netatmo_sensor_updated{home="Home",module="Bedroom",station="Home (Living Room)"} 3502
 netatmo_sensor_updated{home="Home",module="Living Room",station="Home (Living Room)"} 3500
 netatmo_sensor_updated{home="Home",module="Outside",station="Home (Living Room)"} 3501
+netatmo_sensor_updated{home="Home",module="id-aa:bb:cc:dd:ee:f3",station="Home (Living Room)"} 3503
 # HELP netatmo_sensor_wifi_signal_strength Wifi signal strength (86: bad, 71: avg, 56: good)
 # TYPE netatmo_sensor_wifi_signal_strength gauge
 netatmo_sensor_wifi_signal_strength{home="Home",module="Living Room",station="Home (Living Room)"} 45

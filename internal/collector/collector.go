@@ -220,6 +220,10 @@ func (c *NetatmoCollector) RefreshData(now time.Time) {
 
 func (c *NetatmoCollector) collectData(ch chan<- prometheus.Metric, device *netatmo.Device, stationName, homeName string) {
 	moduleName := device.ModuleName
+	if moduleName == "" {
+		moduleName = "id-" + device.ID
+	}
+
 	data := device.DashboardData
 
 	if data.LastMeasure == nil {
