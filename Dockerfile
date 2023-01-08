@@ -9,7 +9,7 @@ RUN go mod download
 RUN go mod verify
 
 COPY . /build/
-RUN make
+RUN make build-binary
 
 FROM busybox
 LABEL maintainer="Robert Jacob <xperimental@solidproject.de>"
