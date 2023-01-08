@@ -11,7 +11,11 @@ The exporter is available as a Docker image both on DockerHub and GitHub:
 - [`ghcr.io/xperimental/netatmo-exporter`](https://github.com/xperimental/netatmo-exporter/pkgs/container/netatmo-exporter)
 - [`xperimental/netatmo-exporter`](https://hub.docker.com/r/xperimental/netatmo-exporter/)
 
-In addition to the `latest` tag which points to the version currently in the `master` branch, tagged versions are also available.
+The following tags are available:
+
+- `x.y.z` pointing to the release with that version
+- `latest` pointing to the most recent released version
+- `master` pointing to the latest build from the default branch
 
 ### Build from source
 
