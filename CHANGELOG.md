@@ -4,6 +4,10 @@ This changelog contains the changes made between releases. The versioning follow
 
 ## Unreleased
 
+### Changed
+
+- `latest` Docker tag now points to most recent release and `master` points to the build from the default branch
+
 ## [1.5.0] - 2022-12-06
 
 ### Added
