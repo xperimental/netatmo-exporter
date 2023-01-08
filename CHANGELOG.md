@@ -4,6 +4,8 @@ This changelog contains the changes made between releases. The versioning follow
 
 ## Unreleased
 
+## [1.5.1] - 2023-01-08
+
 ### Changed
 
 - `latest` Docker tag now points to most recent release and `master` points to the build from the default branch
@@ -75,6 +77,8 @@ This changelog contains the changes made between releases. The versioning follow
 
 - Initial release
 
+[1.5.1]: https://github.com/xperimental/netatmo-exporter/releases/tag/v1.5.1
+[1.5.0]: https://github.com/xperimental/netatmo-exporter/releases/tag/v1.5.0
 [1.4.0]: https://github.com/xperimental/netatmo-exporter/releases/tag/v1.4.0
 [1.3.0]: https://github.com/xperimental/netatmo-exporter/releases/tag/v1.3.0
 [1.2.0]: https://github.com/xperimental/netatmo-exporter/releases/tag/v1.2.0
