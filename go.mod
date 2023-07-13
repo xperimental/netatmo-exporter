@@ -1,6 +1,6 @@
 module github.com/xperimental/netatmo-exporter
 
-go 1.19
+go 1.20
 
 require (
 	github.com/exzz/netatmo-api-go v0.0.0-20201009073308-a8620474d1ea
@@ -10,7 +10,7 @@ require (
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/pflag v1.0.5
 	golang.org/x/net v0.5.0 // indirect
-	golang.org/x/oauth2 v0.4.0 // indirect
+	golang.org/x/oauth2 v0.4.0
 	golang.org/x/sys v0.4.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 )
