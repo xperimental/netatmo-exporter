@@ -31,8 +31,6 @@ const (
 	flagStaleDuration       = "age-stale"
 	flagNetatmoClientID     = "client-id"
 	flagNetatmoClientSecret = "client-secret"
-	flagNetatmoUsername     = "username"
-	flagNetatmoPassword     = "password"
 
 	defaultRefreshInterval = 8 * time.Minute
 	defaultStaleDuration   = 60 * time.Minute
