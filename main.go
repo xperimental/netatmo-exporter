@@ -67,7 +67,7 @@ func main() {
 	http.Handle("/callback", web.CallbackHandler(client))
 	http.Handle("/metrics", promhttp.HandlerFor(prometheus.DefaultGatherer, promhttp.HandlerOpts{}))
 	http.Handle("/version", versionHandler(log))
-	http.Handle("/", http.RedirectHandler("/metrics", http.StatusFound))
+	http.Handle("/", web.HomeHandler(client.CurrentToken))
 
 	log.Infof("Listen on %s...", cfg.Addr)
 	log.Fatal(http.ListenAndServe(cfg.Addr, nil))

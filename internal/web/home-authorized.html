@@ -1,0 +1,13 @@
+<html>
+<head>
+  <title>netatmo-exporter</title>
+</head>
+<body>
+<h1>netatmo-exporter</h1>
+<p>You have a token.</p>
+{{- if .RemainingDuration }}
+<p>Token is valid until {{ .Expiry }} ({{ .RemainingDuration }})</p>
+{{- end }}
+<p>Metrics are available <a href="/metrics">here</a>.</p>
+</body>
+</html>
