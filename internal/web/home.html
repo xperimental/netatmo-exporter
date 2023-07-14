@@ -1,0 +1,18 @@
+<html>
+<head>
+  <title>netatmo-exporter</title>
+</head>
+<body>
+<h1>netatmo-exporter</h1>
+{{- with .Token }}
+<p>You have a token.</p>
+<p>Token is valid until {{ .Expiry }} ({{ .Expiry | remaining }})</p>
+{{- if eq "" .RefreshToken }}
+<p style="color: orangered">Your token has no refresh-token! Once it expires, you need to re-authenticate manually.</p>
+{{- end }}
+<p>Metrics are available <a href="/metrics">here</a>.</p>
+{{- else }}
+<p>You're not authorized yet. Try <a href="/authorize">here</a>.</p>
+{{- end }}
+</body>
+</html>

@@ -12,15 +12,14 @@ import (
 )
 
 var (
-	//go:embed home-unauthorized.html
-	homeNotAuthorizedHtml string
-
-	//go:embed home-authorized.html
-	homeAuthorizedHtml string
+	//go:embed home.html
+	homeHtml string
 )
 
 func HomeHandler(tokenFunc func() (*oauth2.Token, error)) http.Handler {
-	homeAuthorizedTemplate, err := template.New("home-authorized.html").Parse(homeAuthorizedHtml)
+	homeTemplate, err := template.New("home.html").Funcs(map[string]any{
+		"remaining": remaining,
+	}).Parse(homeHtml)
 	if err != nil {
 		panic(err)
 	}
@@ -35,23 +34,21 @@ func HomeHandler(tokenFunc func() (*oauth2.Token, error)) http.Handler {
 		default:
 		}
 
-		wr.Header().Set("Content-Type", "text/html")
-
-		if !token.Valid() {
-			fmt.Fprint(wr, homeNotAuthorizedHtml)
-			return
-		}
-
 		context := struct {
-			Expiry            time.Time
-			RemainingDuration time.Duration
+			Valid bool
+			Token *oauth2.Token
 		}{
-			Expiry:            token.Expiry,
-			RemainingDuration: time.Until(token.Expiry),
+			Valid: token.Valid(),
+			Token: token,
 		}
 
-		if err := homeAuthorizedTemplate.Execute(wr, context); err != nil {
+		wr.Header().Set("Content-Type", "text/html")
+		if err := homeTemplate.Execute(wr, context); err != nil {
 			http.Error(wr, fmt.Sprintf("Error executing template: %s", err), http.StatusInternalServerError)
 		}
 	})
+}
+
+func remaining(t time.Time) time.Duration {
+	return time.Until(t)
 }
