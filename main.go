@@ -9,7 +9,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	netatmo "github.com/exzz/netatmo-api-go"
+	"github.com/exzz/netatmo-api-go"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
@@ -17,6 +17,7 @@ import (
 	"github.com/xperimental/netatmo-exporter/internal/collector"
 	"github.com/xperimental/netatmo-exporter/internal/config"
 	"github.com/xperimental/netatmo-exporter/internal/logger"
+	"github.com/xperimental/netatmo-exporter/internal/token"
 	"github.com/xperimental/netatmo-exporter/internal/web"
 	"golang.org/x/oauth2"
 )
@@ -58,6 +59,9 @@ func main() {
 
 	metrics := collector.New(log, client.Read, cfg.RefreshInterval, cfg.StaleDuration)
 	prometheus.MustRegister(metrics)
+
+	tokenMetric := token.Metric(client.CurrentToken)
+	prometheus.MustRegister(tokenMetric)
 
 	if cfg.DebugHandlers {
 		http.Handle("/debug/data", web.DebugHandler(log, client.Read))
