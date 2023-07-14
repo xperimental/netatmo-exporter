@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/exzz/netatmo-api-go"
 	"github.com/prometheus/client_golang/prometheus"
@@ -51,6 +52,13 @@ func main() {
 		case err != nil:
 			log.Fatalf("Error loading token: %s", err)
 		default:
+			if token.RefreshToken == "" {
+				log.Warn("Restored token has no refresh-token! Exporter will need to be re-authenticated manually.")
+			} else if token.Expiry.IsZero() {
+				log.Warn("Restored token has no expiry time! Expiry set in 30 Minutes.")
+				token.Expiry = time.Now().Add(30 * time.Minute)
+			}
+
 			client.InitWithToken(context.Background(), token)
 		}
 
