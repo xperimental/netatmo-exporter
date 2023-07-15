@@ -2,19 +2,18 @@ package web
 
 import (
 	"fmt"
-	"github.com/exzz/netatmo-api-go"
-	"golang.org/x/oauth2"
 	"html/template"
 	"net/http"
 	"time"
 
+	"github.com/exzz/netatmo-api-go"
+	"golang.org/x/oauth2"
+
 	_ "embed"
 )
 
-var (
-	//go:embed home.html
-	homeHtml string
-)
+//go:embed home.html
+var homeHtml string
 
 func HomeHandler(tokenFunc func() (*oauth2.Token, error)) http.Handler {
 	homeTemplate, err := template.New("home.html").Funcs(map[string]any{
