@@ -7,6 +7,8 @@ GIT_COMMIT := $(shell git rev-parse HEAD)
 DOCKER_REPO ?= xperimental/netatmo-exporter
 DOCKER_TAG ?= dev
 
+include .bingo/Variables.mk
+
 .PHONY: all
 all: test build-binary
 
@@ -15,8 +17,8 @@ test:
 	$(GO_CMD) test -cover ./...
 
 .PHONY: lint
-lint:
-	golangci-lint run --fix
+lint: $(GOLANGCI_LINT)
+	@$(GOLANGCI_LINT) run --fix
 
 .PHONY: build-binary
 build-binary:
