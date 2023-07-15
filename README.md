@@ -32,10 +32,8 @@ make
 If you want to build the exporter for a different OS or architecture, you can specify arguments to the Makefile:
 
 ```bash
-# For 32-bit ARM on Linux
-make GO_ARCH=arm
 # For 64-bit ARM on Linux
-make GO_ARCH=arm64
+GOOS=linux GOARCH=arm64 make build-binary
 ```
 
 ## NetAtmo client credentials
@@ -48,26 +46,33 @@ This application tries to get data from the NetAtmo API. For that to work you wi
 $ netatmo-exporter --help
 Usage of netatmo-exporter:
   -a, --addr string                 Address to listen on. (default ":9210")
-      --age-stale duration          Data age to consider as stale. Stale data does not create metrics anymore. (default 30m0s)
+      --age-stale duration          Data age to consider as stale. Stale data does not create metrics anymore. (default 1h0m0s)
   -i, --client-id string            Client ID for NetAtmo app.
   -s, --client-secret string        Client secret for NetAtmo app.
+      --debug-handlers              Enables debugging HTTP handlers.
+      --external-url string         External URL to use as base for OAuth redirect URL.
       --log-level level             Sets the minimum level output through logging. (default info)
-  -p, --password string             Password of NetAtmo account.
       --refresh-interval duration   Time interval used for internal caching of NetAtmo sensor data. (default 8m0s)
-  -u, --username string             Username of NetAtmo account.
+      --token-file string           Path to token file for loading/persisting authentication token.
 ```
 
 After starting the server will offer the metrics on the `/metrics` endpoint, which can be used as a target for prometheus.
 
-### Passing secrets
+### Environment variables
 
-You can pass credentials either via command line arguments (see next section) or by populating the following environment variables:
+The exporter can be configured either via command line arguments (see previous section) or by populating the following environment variables:
 
-* `NETATMO_EXPORTER_ADDR` Address to listen on
-* `NETATMO_CLIENT_ID` Client ID for NetAtmo app
-* `NETATMO_CLIENT_SECRET` Client secret for NetAtmo app
-* `NETATMO_CLIENT_USERNAME` Username of NetAtmo account
-* `NETATMO_CLIENT_PASSWORD` Password of NetAtmo account
+|                        Variable | Description                                                                |                 Default |
+|--------------------------------:|----------------------------------------------------------------------------|------------------------:|
+|         `NETATMO_EXPORTER_ADDR` | Address to listen on                                                       |                 `:9210` |
+| `NETATMO_EXPORTER_EXTERNAL_URL` | External URL to use as base for OAuth redirect URL.                        | `http://127.0.0.1:9210` |
+|   `NETATMO_EXPORTER_TOKEN_FILE` | Path to token file for loading/persisting authentication token.            |                         |
+|                `DEBUG_HANDLERS` | Enables debugging HTTP handlers.                                           |                         |
+|             `NETATMO_LOG_LEVEL` | Sets the minimum level output through logging.                             |                  `info` |
+|      `NETATMO_REFRESH_INTERVAL` | Time interval used for internal caching of NetAtmo sensor data.            |                    `8m` |
+|             `NETATMO_AGE_STALE` | Data age to consider as stale. Stale data does not create metrics anymore. |                    `1h` |
+|             `NETATMO_CLIENT_ID` | Client ID for NetAtmo app.                                                 |                         |
+|         `NETATMO_CLIENT_SECRET` | Client secret for NetAtmo app.                                             |                         |
 
 ### Cached data
 
