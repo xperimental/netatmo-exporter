@@ -63,6 +63,8 @@ func main() {
 		}
 
 		registerSignalHandler(client, cfg.TokenFile)
+	} else {
+		log.Warn("No token-file set! Authentication will be lost on restart.")
 	}
 
 	metrics := collector.New(log, client.Read, cfg.RefreshInterval, cfg.StaleDuration)
