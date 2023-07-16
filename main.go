@@ -74,7 +74,8 @@ func main() {
 	prometheus.MustRegister(tokenMetric)
 
 	if cfg.DebugHandlers {
-		http.Handle("/debug/data", web.DebugHandler(log, client.Read))
+		http.Handle("/debug/data", web.DebugDataHandler(log, client.Read))
+		http.Handle("/debug/token", web.DebugTokenHandler(log, client.CurrentToken))
 	}
 
 	http.Handle("/authorize", web.AuthorizeHandler(cfg.ExternalURL, client))
