@@ -34,13 +34,16 @@ There are currently two ways of getting the access-token for configuring the net
 1. Open the [NetAtmo Developer Console] and click on the button for your created application.
 2. Scroll down a bit until you reach the section titled "Token Generator".
 3. Select the `read_station` scope and click on the "Generate Token" button.
+  ![Token Generator with selected scopes](token-generator-scopes.png)
 4. You will be redirected to an authorization page from NetAtmo. Click "Yes, I accept".
 5. You will return to the previous page with a new section which contains an "Access Token" and a "Refresh Token".
+  ![Token Generator with tokens](token-generator-tokens.png)
 
 You now have the access-token and refresh-token needed for the netatmo-exporter. There are two ways of getting this information into the exporter:
 
 - Open the web-interface of the netatmo-exporter and enter the **refresh-token** into it.
 
+  ![netatmo-exporter homepage with token field](exporter-enter-token.png)
   The exporter has a simple web-interface when you navigate to it (for example at `http://localhost:9210` if running locally). Paste the **refresh-token** into the textfield and click the update button to submit the token to the exporter.
 
 - Create a token-file and let the exporter read it
