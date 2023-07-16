@@ -28,7 +28,7 @@ func CallbackHandler(client *netatmo.Client) http.HandlerFunc {
 			return
 		}
 
-		fmt.Fprintln(w, "Authenticated.")
+		http.Redirect(w, r, "/", http.StatusFound)
 	}
 }
 
