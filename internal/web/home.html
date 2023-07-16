@@ -17,9 +17,16 @@
     {{- end }}
 {{- else }}
   <p>You're not authorized yet.</p>
-  <p>If the <code>external-url</code> is set up correctly or you're accessing the exporter using the loopback address, try <a href="/authorize">authorizing here</a>.</p>
+  <p>If the <code>external-url</code> is set up correctly or you're accessing the exporter using the loopback address,
+    try <a href="/auth/authorize">authorizing here</a>.</p>
   <p>You can also generate a token on <a href="{{ .NetAtmoDevSite }}" target="_blank">NetAtmo's developer website</a>.
     Be sure to select the <b>read_station</b> scope when generating the token.</p>
+  <p>Once you have authenticated on the website, please paste the <b>refresh token</b> into the box below:</p>
+  <form method="post" action="/auth/settoken">
+    <label for="refresh_token">Refresh token:</label>
+    <input type="text" name="refresh_token" size="60"/>
+    <input type="submit" name="submit" value="Update token"/>
+  </form>
 {{- end }}
 <hr/>
 <p>Version information is available <a href="/version">here</a>.</p>

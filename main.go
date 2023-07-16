@@ -78,8 +78,12 @@ func main() {
 		http.Handle("/debug/token", web.DebugTokenHandler(log, client.CurrentToken))
 	}
 
-	http.Handle("/authorize", web.AuthorizeHandler(cfg.ExternalURL, client))
-	http.Handle("/callback", web.CallbackHandler(client))
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	http.Handle("/auth/authorize", web.AuthorizeHandler(cfg.ExternalURL, client))
+	http.Handle("/auth/callback", web.CallbackHandler(ctx, client))
+	http.Handle("/auth/settoken", web.SetTokenHandler(ctx, client))
 	http.Handle("/metrics", promhttp.HandlerFor(prometheus.DefaultGatherer, promhttp.HandlerOpts{}))
 	http.Handle("/version", versionHandler(log))
 	http.Handle("/", web.HomeHandler(client.CurrentToken))
