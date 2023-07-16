@@ -40,6 +40,10 @@ GOOS=linux GOARCH=arm64 make build-binary
 
 This application tries to get data from the NetAtmo API. For that to work you will need to create an application in the [NetAtmo developer console](https://dev.netatmo.com/apps/), so that you can get a Client ID and secret.
 
+For authentication, you either need to use the integrated web-interface of the exporter or you need to use the developer console to create a token and make manually make it available for the exporter to use.
+
+The exporter is able to persist the authentication token during restarts, so that no user interaction is needed when restarting the exporter, unless the token expired during the time the exporter was not active. See [token-file.md](/doc/token-file.md) for an explanation of the file used for persisting the token.
+
 ## Usage
 
 ```plain
