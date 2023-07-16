@@ -12,9 +12,19 @@ import (
 	_ "embed"
 )
 
+const netatmoDevSite = "https://dev.netatmo.com/apps/"
+
 //go:embed home.html
 var homeHtml string
 
+type homeContext struct {
+	Valid          bool
+	Token          *oauth2.Token
+	NetAtmoDevSite string
+}
+
+// HomeHandler produces a simple website showing the exporter's status in a human-readable form.
+// It provides links to other information and help for authentication as well.
 func HomeHandler(tokenFunc func() (*oauth2.Token, error)) http.Handler {
 	homeTemplate, err := template.New("home.html").Funcs(map[string]any{
 		"remaining": remaining,
@@ -33,12 +43,10 @@ func HomeHandler(tokenFunc func() (*oauth2.Token, error)) http.Handler {
 		default:
 		}
 
-		context := struct {
-			Valid bool
-			Token *oauth2.Token
-		}{
-			Valid: token.Valid(),
-			Token: token,
+		context := homeContext{
+			Valid:          token.Valid(),
+			Token:          token,
+			NetAtmoDevSite: netatmoDevSite,
 		}
 
 		wr.Header().Set("Content-Type", "text/html")

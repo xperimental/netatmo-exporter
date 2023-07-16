@@ -1,18 +1,25 @@
+{{- /*gotype: github.com/xperimental/netatmo-exporter/internal/web.homeContext*/ -}}
 <html>
 <head>
   <title>netatmo-exporter</title>
 </head>
 <body>
 <h1>netatmo-exporter</h1>
-{{- with .Token }}
-<p>You have a token.</p>
-<p>Token is valid until {{ .Expiry }} ({{ .Expiry | remaining }})</p>
-{{- if eq "" .RefreshToken }}
-<p style="color: orangered">Your token has no refresh-token! Once it expires, you need to re-authenticate manually.</p>
-{{- end }}
-<p>Metrics are available <a href="/metrics">here</a>.</p>
+{{- if .Token }}
+    {{- with .Token }}
+      <p>You have a token.</p>
+      <p>Token is valid until {{ .Expiry }} ({{ .Expiry | remaining }})</p>
+      {{- if eq "" .RefreshToken }}
+        <p style="color: orangered">Your token has no refresh-token! Once it expires, you need to re-authenticate
+          manually.</p>
+      {{- end }}
+      <p>Metrics are available <a href="/metrics">here</a>.</p>
+    {{- end }}
 {{- else }}
-<p>You're not authorized yet. Try <a href="/authorize">here</a>.</p>
+  <p>You're not authorized yet.</p>
+  <p>If the <code>external-url</code> is set up correctly or you're accessing the exporter using the loopback address, try <a href="/authorize">authorizing here</a>.</p>
+  <p>You can also generate a token on <a href="{{ .NetAtmoDevSite }}" target="_blank">NetAtmo's developer website</a>.
+    Be sure to select the <b>read_station</b> scope when generating the token.</p>
 {{- end }}
 </body>
 </html>
