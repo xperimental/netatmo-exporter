@@ -28,6 +28,8 @@ func TestParseConfig(t *testing.T) {
 			name: "success",
 			args: []string{
 				"test-cmd",
+				"--" + flagTokenFile,
+				"token-file",
 				"--" + flagNetatmoClientID,
 				"id",
 				"--" + flagNetatmoClientSecret,
@@ -37,6 +39,7 @@ func TestParseConfig(t *testing.T) {
 			wantConfig: Config{
 				Addr:            defaultConfig.Addr,
 				ExternalURL:     "http://127.0.0.1:9210",
+				TokenFile:       "token-file",
 				LogLevel:        logLevel(logrus.InfoLevel),
 				RefreshInterval: defaultRefreshInterval,
 				StaleDuration:   defaultStaleDuration,
@@ -98,9 +101,26 @@ func TestParseConfig(t *testing.T) {
 			wantErr: errNoListenAddress,
 		},
 		{
+			name: "no token file",
+			args: []string{
+				"test-cmd",
+			},
+			env: map[string]string{},
+			wantConfig: Config{
+				Addr: defaultConfig.Addr,
+				Netatmo: netatmo.Config{
+					ClientID:     "id",
+					ClientSecret: "secret",
+				},
+			},
+			wantErr: errNoTokenFile,
+		},
+		{
 			name: "no client id",
 			args: []string{
 				"test-cmd",
+				"--" + flagTokenFile,
+				"token-file",
 				"--" + flagNetatmoClientSecret,
 				"secret",
 			},
@@ -118,6 +138,8 @@ func TestParseConfig(t *testing.T) {
 			name: "no client secret",
 			args: []string{
 				"test-cmd",
+				"--" + flagTokenFile,
+				"token-file",
 				"--" + flagNetatmoClientID,
 				"id",
 			},

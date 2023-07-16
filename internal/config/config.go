@@ -46,6 +46,7 @@ var (
 
 	errNoBinaryName          = errors.New("need the binary name as first argument")
 	errNoListenAddress       = errors.New("no listen address")
+	errNoTokenFile           = errors.New("need a token file to save the token")
 	errNoNetatmoClientID     = errors.New("need a NetAtmo client ID")
 	errNoNetatmoClientSecret = errors.New("need a NetAtmo client secret")
 )
@@ -124,6 +125,10 @@ func Parse(args []string, getEnv func(string) string) (Config, error) {
 		}
 
 		cfg.ExternalURL = fmt.Sprintf("http://%s:%s", host, port)
+	}
+
+	if cfg.TokenFile == "" {
+		return Config{}, errNoTokenFile
 	}
 
 	if len(cfg.Netatmo.ClientID) == 0 {
