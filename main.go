@@ -55,10 +55,11 @@ func main() {
 			if token.RefreshToken == "" {
 				log.Warn("Restored token has no refresh-token! Exporter will need to be re-authenticated manually.")
 			} else if token.Expiry.IsZero() {
-				log.Warn("Restored token has no expiry time! Expiry set in 30 Minutes.")
-				token.Expiry = time.Now().Add(30 * time.Minute)
+				log.Warn("Restored token has no expiry time! Token will be renewed immediately.")
+				token.Expiry = time.Now().Add(time.Second)
 			}
 
+			log.Infof("Loaded token from %s.", cfg.TokenFile)
 			client.InitWithToken(context.Background(), token)
 		}
 
@@ -125,10 +126,15 @@ func registerSignalHandler(client *netatmo.Client, fileName string) {
 
 func saveToken(client *netatmo.Client, fileName string) error {
 	token, err := client.CurrentToken()
-	if err != nil {
+	switch {
+	case err == netatmo.ErrNotAuthenticated:
+		return nil
+	case err != nil:
 		return fmt.Errorf("error retrieving token: %w", err)
+	default:
 	}
 
+	log.Infof("Saving token to %s ...", fileName)
 	data, err := json.Marshal(token)
 	if err != nil {
 		return fmt.Errorf("error marshalling token: %w", err)
