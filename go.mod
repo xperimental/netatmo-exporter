@@ -10,7 +10,7 @@ require (
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/pflag v1.0.5
 	golang.org/x/net v0.12.0 // indirect
-	golang.org/x/oauth2 v0.10.0 // indirect
+	golang.org/x/oauth2 v0.10.0
 	golang.org/x/sys v0.10.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 )
@@ -26,4 +26,4 @@ require (
 	google.golang.org/protobuf v1.31.0 // indirect
 )
 
-replace github.com/exzz/netatmo-api-go => github.com/xperimental/netatmo-api-go v0.0.0-20220918192520-fb6577104ce6
+replace github.com/exzz/netatmo-api-go => github.com/xperimental/netatmo-api-go v0.0.0-20220927234935-2a059c20f221

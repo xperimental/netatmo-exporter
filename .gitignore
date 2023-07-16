@@ -1,2 +1,3 @@
-netatmo-exporter
+/netatmo-exporter
 run.sh
+token.json

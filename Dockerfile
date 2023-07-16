@@ -23,7 +23,13 @@ LABEL maintainer="Robert Jacob <xperimental@solidproject.de>"
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=builder /build/netatmo-exporter /bin/netatmo-exporter
 
+RUN mkdir -p /var/lib/netatmo-exporter/ \
+ && chown nobody /var/lib/netatmo-exporter/
+
 USER nobody
 EXPOSE 9210
+
+ENV NETATMO_EXPORTER_TOKEN_FILE=/var/lib/netatmo-exporter/netatmo-token.json
+VOLUME /var/lib/netatmo-exporter/
 
 ENTRYPOINT ["/bin/netatmo-exporter"]
