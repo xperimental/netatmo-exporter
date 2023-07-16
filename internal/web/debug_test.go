@@ -83,7 +83,7 @@ func TestDebugTokenHandler(t *testing.T) {
 				return &oauth2.Token{
 					AccessToken:  "access-token",
 					RefreshToken: "refresh-token",
-					Expiry:       time.Unix(0, 0),
+					Expiry:       time.Unix(0, 0).UTC(),
 				}, nil
 			},
 			wantStatus: http.StatusOK,
@@ -91,7 +91,7 @@ func TestDebugTokenHandler(t *testing.T) {
   "isValid": false,
   "hasAccessToken": true,
   "hasRefreshToken": true,
-  "expiry": "1970-01-01T01:00:00+01:00"
+  "expiry": "1970-01-01T00:00:00Z"
 }
 `,
 		},
