@@ -4,6 +4,10 @@ This changelog contains the changes made between releases. The versioning follow
 
 ## Unreleased
 
+## [2.0.0] - 2023-07-18
+
+- Major: New authentication method replaces existing username/password authentication
+
 ## [1.5.1] - 2023-01-08
 
 ### Changed
@@ -77,6 +81,7 @@ This changelog contains the changes made between releases. The versioning follow
 
 - Initial release
 
+[2.0.0]: https://github.com/xperimental/netatmo-exporter/releases/tag/v2.0.0
 [1.5.1]: https://github.com/xperimental/netatmo-exporter/releases/tag/v1.5.1
 [1.5.0]: https://github.com/xperimental/netatmo-exporter/releases/tag/v1.5.0
 [1.4.0]: https://github.com/xperimental/netatmo-exporter/releases/tag/v1.4.0
