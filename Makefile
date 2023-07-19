@@ -32,6 +32,15 @@ image:
 all-images:
 	docker buildx build -t "ghcr.io/$(DOCKER_REPO):$(DOCKER_TAG)" -t "docker.io/$(DOCKER_REPO):$(DOCKER_TAG)" --platform linux/amd64,linux/arm64 --push .
 
+.PHONY: install
+install:
+	install netatmo-exporter /usr/local/bin/
+	mkdir -p /var/lib/netatmo-exporter/
+	chown -R netatmo-exporter:netatmo-exporter /var/lib/netatmo-exporter/
+	install -m 0644 contrib/netatmo-exporter.service /etc/systemd/system/
+	install -m 0644 contrib/netatmo-systemd.env /etc/default/netatmo-exporter
+	systemctl daemon-reload
+
 .PHONY: clean
 clean:
 	rm -f netatmo-exporter

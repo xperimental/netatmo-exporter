@@ -1,0 +1,19 @@
+[Unit]
+Description=Prometheus exporter for NetAtmo sensor data
+Documentation=https://github.com/xperimental/netatmo-exporter
+After=network.target nss-lookup.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/netatmo-exporter
+User=netatmo-exporter
+Group=netatmo-exporter
+EnvironmentFile=/etc/default/netatmo-exporter
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=full
+Restart=on-failure
+RestartSec=20
+
+[Install]
+WantedBy=multi-user.target
