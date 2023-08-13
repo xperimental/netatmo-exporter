@@ -17,6 +17,12 @@ The following tags are available:
 - `latest` pointing to the most recent released version
 - `master` pointing to the latest build from the default branch
 
+#### Token file and Docker volume
+
+When running the `netatmo-exporter` in Docker, it is recommended to store the token file in a "Docker volume", so that it can persist container recreation. The image is already set up to do that. The default path for the token file is `/var/lib/netatmo-exporter/netatmo-token.json` and the whole `/var/lib/netatmo-exporter/` directory is set as a volume.
+
+This enables the user to update the used netatmo-exporter image without losing the authentication, for example using `docker compose`. It does not automatically provide the same mechanism on Kubernetes, though. For Kubernetes, you probably want a `StatefulSet`.
+
 ### Build from source
 
 Because this program uses the "Go Module" feature introduced in Go 1.11, you'll need at least that version of Go for building it.
@@ -66,17 +72,17 @@ After starting the server will offer the metrics on the `/metrics` endpoint, whi
 
 The exporter can be configured either via command line arguments (see previous section) or by populating the following environment variables:
 
-|                        Variable | Description                                                                |                 Default |
-|--------------------------------:|----------------------------------------------------------------------------|------------------------:|
-|         `NETATMO_EXPORTER_ADDR` | Address to listen on                                                       |                 `:9210` |
-| `NETATMO_EXPORTER_EXTERNAL_URL` | External URL to use as base for OAuth redirect URL.                        | `http://127.0.0.1:9210` |
-|   `NETATMO_EXPORTER_TOKEN_FILE` | Path to token file for loading/persisting authentication token.            |                         |
-|                `DEBUG_HANDLERS` | Enables debugging HTTP handlers.                                           |                         |
-|             `NETATMO_LOG_LEVEL` | Sets the minimum level output through logging.                             |                  `info` |
-|      `NETATMO_REFRESH_INTERVAL` | Time interval used for internal caching of NetAtmo sensor data.            |                    `8m` |
-|             `NETATMO_AGE_STALE` | Data age to consider as stale. Stale data does not create metrics anymore. |                    `1h` |
-|             `NETATMO_CLIENT_ID` | Client ID for NetAtmo app.                                                 |                         |
-|         `NETATMO_CLIENT_SECRET` | Client secret for NetAtmo app.                                             |                         |
+|                        Variable | Description                                                                |                                                   Default |
+|--------------------------------:|----------------------------------------------------------------------------|----------------------------------------------------------:|
+|         `NETATMO_EXPORTER_ADDR` | Address to listen on                                                       |                                                   `:9210` |
+| `NETATMO_EXPORTER_EXTERNAL_URL` | External URL to use as base for OAuth redirect URL.                        |                                   `http://127.0.0.1:9210` |
+|   `NETATMO_EXPORTER_TOKEN_FILE` | Path to token file for loading/persisting authentication token.            | (the Docker image has a default, which can be overridden) |
+|                `DEBUG_HANDLERS` | Enables debugging HTTP handlers.                                           |                                                           |
+|             `NETATMO_LOG_LEVEL` | Sets the minimum level output through logging.                             |                                                    `info` |
+|      `NETATMO_REFRESH_INTERVAL` | Time interval used for internal caching of NetAtmo sensor data.            |                                                      `8m` |
+|             `NETATMO_AGE_STALE` | Data age to consider as stale. Stale data does not create metrics anymore. |                                                      `1h` |
+|             `NETATMO_CLIENT_ID` | Client ID for NetAtmo app.                                                 |                                                           |
+|         `NETATMO_CLIENT_SECRET` | Client secret for NetAtmo app.                                             |                                                           |
 
 ### Cached data
 
