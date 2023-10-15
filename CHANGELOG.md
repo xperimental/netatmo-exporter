@@ -4,6 +4,12 @@ This changelog contains the changes made between releases. The versioning follow
 
 ## Unreleased
 
+## [2.0.1] - 2023-10-15
+
+### Changed
+
+- Maintenance release, updates Go runtime and dependencies
+
 ## [2.0.0] - 2023-07-18
 
 - Major: New authentication method replaces existing username/password authentication
@@ -81,6 +87,7 @@ This changelog contains the changes made between releases. The versioning follow
 
 - Initial release
 
+[2.0.1]: https://github.com/xperimental/netatmo-exporter/releases/tag/v2.0.1
 [2.0.0]: https://github.com/xperimental/netatmo-exporter/releases/tag/v2.0.0
 [1.5.1]: https://github.com/xperimental/netatmo-exporter/releases/tag/v1.5.1
 [1.5.0]: https://github.com/xperimental/netatmo-exporter/releases/tag/v1.5.0
