@@ -1,0 +1,16 @@
+global:
+  scrape_interval: 5s 
+  scrape_timeout: 5s
+  external_labels:
+    monitor: 'codelab-monitor'
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+    - targets: ['localhost:9090']
+
+  - job_name: 'netatmo'
+    scrape_interval: 45s
+    static_configs:
+      - targets: ['192.168.3.52:9210']
+      
