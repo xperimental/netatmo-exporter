@@ -161,7 +161,8 @@ We make again use of the latest *netatmo-exporter* docker package and we map the
 
 ## Netatmo configuration file
 
-In this JSON file we need to define your access and refresh token as well as the expiry date. The expire date will be refreshed automatically so you can use the default date given in the file. If you encounter problems change the date accordingly to yours.  
+In this JSON file named *token.json* you need to define your access and refresh token as well as the expiry date. The expire date will be refreshed automatically so you can use the default date given in the file. If you encounter problems change the date accordingly to yours.  
+As *token.json* is included in the *.gitignore* of the root project you will not find it in the *data* directory of this example. Keep in mind that you have to create it accordingly.  
 
 ```json
 {
