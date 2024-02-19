@@ -2,7 +2,7 @@
 
 # System setup
 
-The docker configuration works great locally on my MacBook Pro as well as on a passive Intel based system under Ubuntu 20.4. The Ubuntu system is available in my local network (not externally) and a tablet in kiosk mode is working as the display of the Grafana dashboard. The *docker-compose.yml* as well as all other configuration files are available in the *_data* directory.  
+The docker configuration works great locally on my MacBook Pro as well as on a passive Intel based system under Ubuntu 20.4. The Ubuntu system is available in my local network (not externally). A tablet in kiosk mode is displaying the Grafana dashboard. The *docker-compose.yml* as well as all other configuration files are available in the *data* directory.  
 
 # The Docker containers
 
@@ -10,7 +10,7 @@ The *docker-compose* file provided here loads 4 containers to visualize the data
 
 ## 1. The netatmo-exporter
 
-Available via [Github](https://github.com/xperimental/netatmo-exporter). The container will connect to the Netatmo webserver to read every 8 minutes the data of your devices available throughout your private *NETATMO_CLIENT_ID*. The data will be available via a frequently updated JSON file exposed by a webservice.  
+Available via [Github](https://github.com/xperimental/netatmo-exporter). The container will connect to the Netatmo webserver reading the data of your devices available throughout your private NETATMO_CLIENT_ID ( updating every 8 minutes). The data will be available via a JSON file exposed by a webservice.  
 
 ## 2. A Prometheus data monitoring
 
@@ -27,8 +27,8 @@ The different container talk to each other via webservices and so they require a
 
 # The docker-compose.yml
 
-Prometheus as well as netatmo-exporter and Grafana need different, tool specific configuration files. To make it easier to migrate the project to another host we bind a local directory to all of the containers. In this case the containers will load their configuration from one directory.  
-The file *.env* will be used by docker to define environment variables that are available throughout all containers defined in *docker-compose.yml*. The file has to exist in the same directory as the *docker-compose.yml*.  
+Prometheus as well as the netatmo-exporter and Grafana need different, specific configuration files. To make it easier to migrate the project to another host we bind a local directory to all of the containers. In this case the containers will load their configuration from one directory.
+The file *.env* will be used by docker to define environment variables that are available throughout all containers defined in *docker-compose.yml*. The file has to exist in the same directory as the *docker-compose.yml* file.  
 
 This is the content of *.env* file used here, fell free to modify the mapped directory according to your need:  
 
@@ -106,7 +106,7 @@ services:
 
  We make use of the latest Prometheus docker package and we map the *DATA_DIRECTORY* to */etc/prometheus* within the container. Therefore Prometheus will use our configuration file as shown above. We define the port 9090 and assign the IP 192.168.3.50 of our network as defined in the *networks* section (refer above) to it.  
 
-## Grafana docker-compose configuration 
+## Grafana docker-compose configuration  
 
 This is straight forward. I added both methods for the configuration file and I assume both of them are working. But as I was playing with different configurations and systems it turned out that only the variant with a docker volume worked. Again the Grafana settings are below the *services* section.  
 
@@ -128,7 +128,7 @@ grafana:
       bridge:
 ```
 
-We make again use of the latest Grafana docker package and this time we map the docker volume to the */var/lib/grafana* directory within the container. That's the directory were Grafana expects and saves its configuration file. You can try to map the *DATA_DIRECTORY* to */var/lib/grafana* and I expect that it will work as well. We define the port 3000 and assign the IP 192.168.3.51 of our network as defined in the *networks* (refer above) to it.  
+We again make use of the latest Grafana docker package and this time we map the docker volume to the */var/lib/grafana* directory within the container. That's the directory where Grafana expects its configuration file. You can try to map the *DATA_DIRECTORY* to */var/lib/grafana* and I expect that it will work as well. We define the port 3000 and assign the IP 192.168.3.51 of our network as defined in the networks (refer above) to it.  
 
 ## Netatmo-exporter docker-compose configuration
 
@@ -174,7 +174,7 @@ As *token.json* is included in the *.gitignore* of the root project you will not
 
 ## Watchtower docker-compose configuration
 
-This is the last configuration step to ensure the consistency of your configuration. It's basically a default configuration.Again the settings are below the *services* section.  
+This is the last configuration step to ensure the consistency of your configuration. It's basically a default configuration. Again the settings are below the *services* section. 
 
 ```yml
 watchtower:
@@ -185,5 +185,5 @@ watchtower:
       - ${HOME}/.docker/config.json:/config.json
 ```
 
-That's basically it to get the system up and running. For the Netatmo configuration in detail you can refer to the documentation of [netatmo-exporter on Github](https://github.com/xperimental/netatmo-exporter). For test purposes you can also use the dashboard provided there before you start defining your private dashboard. Keep in mind that it takes some time after starting the containers before you see them with valid data in your browser.  
-*localhost:3000* refers to the Grafana container, *localhost:9210* to the netatmo-exporter container (good to see the available metrics) and *localhost:9090* to the Prometheus container (good to check the connection to the netatmo-exporter).
+That are all steps to get the system up and running. For the in detail Netatmo configuration you can refer to the documentation of [netatmo-exporter on Github](https://github.com/xperimental/netatmo-exporter). For testing purposes you can also use the dashboard provided there before you start defining your private dashboard. Keep in mind that it takes some time after starting the containers before you see them with valid data in your browser.
+*localhost:3000* refers to the Grafana container, *localhost:9210* to the netatmo-exporter container (good to see the available metrics) and *localhost:9090* to the Prometheus container (good to check the connection to the netatmo-exporter).  
