@@ -12,7 +12,7 @@ The exporter uses a "token file" to save the authentication information it recei
 
 ## Attributes
 
-All of the three attributes are necessary for the exporter to work correctly, but they have different purposes:
+All the three attributes are necessary for the exporter to work correctly, but they have different purposes:
 
 - `access_token` this is the "key" that is used to communicate with the NetAtmo API and fetch the data available for the user. It is only valid for a limited time after which the API will return a 403 error when the access-token is used.
 - `expiry` this is the time when the `access_token` will expire. The exporter needs to know this, so that it can get a new access-token in time ("refresh" it).
@@ -23,6 +23,8 @@ All of the three attributes are necessary for the exporter to work correctly, bu
 When starting the exporter it will try to load the file specified with `--token-file`. If it does not exist, it will just start up without any authentication and wait for the user to initiate authentication.
 
 If the token-file is available, it is read by the exporter. If all three attributes are available and the token is still valid, the exporter will immediately start working properly.
+
+When the token expiry time has already passed, then it is ignored. The startup continues as if no token is present and the exporter will wait for the user to initiate authentication.
 
 The exporter will issue warnings if the token-file is missing attributes during startup. If the `expiry` is missing a new short expiry will be set, so that the refresh happens as early as possible.
 
