@@ -15,12 +15,13 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
+	"golang.org/x/oauth2"
+
 	"github.com/xperimental/netatmo-exporter/v2/internal/collector"
 	"github.com/xperimental/netatmo-exporter/v2/internal/config"
 	"github.com/xperimental/netatmo-exporter/v2/internal/logger"
 	"github.com/xperimental/netatmo-exporter/v2/internal/token"
 	"github.com/xperimental/netatmo-exporter/v2/internal/web"
-	"golang.org/x/oauth2"
 )
 
 var (
@@ -51,6 +52,8 @@ func main() {
 		case os.IsNotExist(err):
 		case err != nil:
 			log.Fatalf("Error loading token: %s", err)
+		case !token.Expiry.IsZero() && token.Expiry.Before(time.Now()):
+			log.Warn("Restored token has expired! Token has been ignored.")
 		default:
 			if token.RefreshToken == "" {
 				log.Warn("Restored token has no refresh-token! Exporter will need to be re-authenticated manually.")
