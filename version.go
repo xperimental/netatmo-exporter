@@ -9,10 +9,10 @@ import (
 
 var (
 	// Version contains the version as set during the build.
-	Version = ""
+	Version = "unknown"
 
 	// GitCommit contains the git commit hash set during the build.
-	GitCommit = ""
+	GitCommit = "unknown"
 )
 
 func versionHandler(log logrus.FieldLogger) http.Handler {
