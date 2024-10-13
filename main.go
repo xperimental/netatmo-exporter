@@ -44,6 +44,7 @@ func main() {
 	}
 	log.SetLevel(logrus.Level(cfg.LogLevel))
 
+	log.Infof("netatmo-exporter %s (commit: %s)", Version, GitCommit)
 	client := netatmo.NewClient(cfg.Netatmo)
 
 	if cfg.TokenFile != "" {
