@@ -10,13 +10,13 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/exzz/netatmo-api-go"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
 	"golang.org/x/oauth2"
 
+	"github.com/exzz/netatmo-api-go"
 	"github.com/xperimental/netatmo-exporter/v2/internal/collector"
 	"github.com/xperimental/netatmo-exporter/v2/internal/config"
 	"github.com/xperimental/netatmo-exporter/v2/internal/logger"
@@ -45,7 +45,7 @@ func main() {
 	log.SetLevel(logrus.Level(cfg.LogLevel))
 
 	log.Infof("netatmo-exporter %s (commit: %s)", Version, GitCommit)
-	client := netatmo.NewClient(cfg.Netatmo)
+	client := netatmo.NewClient(cfg.Netatmo, tokenUpdated(cfg.TokenFile))
 
 	if cfg.TokenFile != "" {
 		token, err := loadToken(cfg.TokenFile)
@@ -128,6 +128,20 @@ func registerSignalHandler(client *netatmo.Client, fileName string) {
 	}()
 }
 
+func tokenUpdated(fileName string) netatmo.TokenUpdateFunc {
+	if fileName == "" {
+		return nil
+	}
+
+	return func(token *oauth2.Token) {
+		log.Debugf("Token updated. Expires: %s", token.Expiry)
+
+		if err := saveTokenFile(fileName, token); err != nil {
+			log.Errorf("Error saving token: %s", err)
+		}
+	}
+}
+
 func saveToken(client *netatmo.Client, fileName string) error {
 	token, err := client.CurrentToken()
 	switch {
@@ -139,6 +153,10 @@ func saveToken(client *netatmo.Client, fileName string) error {
 	}
 
 	log.Infof("Saving token to %s ...", fileName)
+	return saveTokenFile(fileName, token)
+}
+
+func saveTokenFile(fileName string, token *oauth2.Token) error {
 	data, err := json.Marshal(token)
 	if err != nil {
 		return fmt.Errorf("error marshalling token: %w", err)

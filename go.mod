@@ -8,7 +8,7 @@ require (
 	github.com/prometheus/client_golang v1.17.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/pflag v1.0.5
-	golang.org/x/oauth2 v0.22.0
+	golang.org/x/oauth2 v0.23.0
 )
 
 require (
@@ -24,4 +24,4 @@ require (
 	google.golang.org/protobuf v1.31.0 // indirect
 )
 
-replace github.com/exzz/netatmo-api-go => github.com/xperimental/netatmo-api-go v0.0.0-20220927234935-2a059c20f221
+replace github.com/exzz/netatmo-api-go => github.com/xperimental/netatmo-api-go v0.0.0-20241013210700-5e7f333f57e8
