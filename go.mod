@@ -26,4 +26,4 @@ require (
 	google.golang.org/protobuf v1.35.1 // indirect
 )
 
-replace github.com/exzz/netatmo-api-go => github.com/xperimental/netatmo-api-go v0.0.0-20241020165001-b941db716664
+replace github.com/exzz/netatmo-api-go => github.com/xperimental/netatmo-api-go v0.0.0-20241124210050-8ef27def749e
