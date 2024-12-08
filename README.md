@@ -98,6 +98,14 @@ scrape_configs:
       - targets: ['localhost:9210']
 ```
 
+### Troubleshooting
+
+There have been issues with stale data in the NetAtmo account causing authentication issues. If you are getting `invalid_grant` errors when refreshing a token or the data refresh fails with an `Invalid access token` error then you might have this issue with your account.
+
+In that case look at your [account page](https://home.netatmo.com/settings/my-account), navigate to the list of "Partner-Apps" and remove all entries related to the netatmo-exporter. The same option is also available in the mobile app.
+
+Once this is done, remove the token file from the netatmo-exporter and re-authenticate.
+
 ## Links
 
 - [Grafana Dashboard](https://grafana.com/grafana/dashboards/13672) contributed by [@GordonFreemanK](https://github.com/GordonFreemanK)
