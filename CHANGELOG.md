@@ -4,6 +4,16 @@ This changelog contains the changes made between releases. The versioning follow
 
 ## Unreleased
 
+## [2.1.1] - 2024-12-22
+
+### Added
+
+- Error messages returned from NetAtmo API are shown in more detail
+
+### Changed
+
+- Updated Go runtime and dependencies
+
 ## [2.1.0] - 2024-10-20
 
 ### Added
@@ -102,6 +112,7 @@ This changelog contains the changes made between releases. The versioning follow
 
 - Initial release
 
+[2.1.1]: https://github.com/xperimental/netatmo-exporter/releases/tag/v2.1.1
 [2.1.0]: https://github.com/xperimental/netatmo-exporter/releases/tag/v2.1.0
 [2.0.1]: https://github.com/xperimental/netatmo-exporter/releases/tag/v2.0.1
 [2.0.0]: https://github.com/xperimental/netatmo-exporter/releases/tag/v2.0.0
