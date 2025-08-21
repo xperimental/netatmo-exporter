@@ -2,7 +2,7 @@ module github.com/xperimental/netatmo-exporter/v2
 
 go 1.23.0
 
-toolchain go1.24.2
+toolchain go1.24.6
 
 require (
 	github.com/exzz/netatmo-api-go v0.0.0-20201009073308-a8620474d1ea
