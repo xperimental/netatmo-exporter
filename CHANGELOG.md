@@ -4,6 +4,11 @@ This changelog contains the changes made between releases. The versioning follow
 
 ## Unreleased
 
+### Changed
+
+- Updated API endpoint to `api.netatmo.com`
+- Updated Go runtime and dependencies
+
 ## [2.1.1] - 2024-12-22
 
 ### Added
