@@ -4,6 +4,8 @@ This changelog contains the changes made between releases. The versioning follow
 
 ## Unreleased
 
+## [2.1.2] - 2025-08-21
+
 ### Changed
 
 - Updated API endpoint to `api.netatmo.com`
@@ -117,6 +119,7 @@ This changelog contains the changes made between releases. The versioning follow
 
 - Initial release
 
+[2.1.2]: https://github.com/xperimental/netatmo-exporter/releases/tag/v2.1.2
 [2.1.1]: https://github.com/xperimental/netatmo-exporter/releases/tag/v2.1.1
 [2.1.0]: https://github.com/xperimental/netatmo-exporter/releases/tag/v2.1.0
 [2.0.1]: https://github.com/xperimental/netatmo-exporter/releases/tag/v2.0.1
