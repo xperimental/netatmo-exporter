@@ -1,0 +1,74 @@
+# version: '3'
+
+services:
+  prometheus:
+    # prometheus is scraping the netatmo exporter service in a given intervall. the configuration
+    # is done by prometheus.yml. the file in this example is given in the ${DATA_DIRECTORY} directory
+    image: prom/prometheus:latest
+    volumes:
+      # mount the data directory to /etc/prometheus to load the prometheus config from prometheus.yml
+      - ${DATA_DIRECTORY}:/etc/prometheus    
+    ports:
+      # the default port beeing used by prometheus to send the data
+      - "9090:9090"
+    networks:
+      netatmo-network:
+        ipv4_address: 192.168.3.50
+
+  grafana:
+    # grafana is running a dashboard collecting data from prometheus 
+    image: grafana/grafana:latest
+    volumes:
+      # create a grafana directory that is stored locally within all images defined in this file
+      - grafana_data:/var/lib/grafana
+      # ...or use a mounted directory instead
+      #- ${DATA_DIRECTORY}:/var/lib/grafana
+    ports:
+      # the default port beeing used by grafana to show the dashboard and to configure it
+      - "3000:3000"
+    networks:
+      netatmo-network:
+        ipv4_address: 192.168.3.51
+      bridge:
+
+  netatmo-exporter:
+    # this image is loading data from the netatmo server and provides them as a webservice that is scraped by prometheus
+    image: ghcr.io/xperimental/netatmo-exporter:latest
+    restart: unless-stopped
+    environment:
+      - NETATMO_CLIENT_ID=your_client_id
+      - NETATMO_CLIENT_SECRET=your_client_secret
+      - NETATMO_EXPORTER_EXTERNAL_URL=http://192.168.3.52:9210
+      - NETATMO_EXPORTER_TOKEN_FILE=/usr/token.json
+    volumes:
+      # the netatmo-exporter need your netatmo credentials stored in a filename named token.json. the file includes
+      # your access_token, refresh_token and the expiry date that is refreshed automatically
+      - ${DATA_DIRECTORY}:/usr
+    ports:
+        # the default port beeing used by prometheus to scrape the data
+      - "9210:9210"
+    networks:
+      netatmo-network:
+        ipv4_address: 192.168.3.52
+      bridge:
+
+  watchtower:
+    # monitor the running container and update them if neccassary
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${HOME}/.docker/config.json:/config.json
+
+volumes:
+  grafana_data:
+    driver: local
+
+# if you want to use a locally saved grafana configuration
+networks:
+  netatmo-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.3.0/24
+  bridge:
+    driver: bridge
